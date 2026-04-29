@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Mail, ArrowUp, Download, Heart } from "lucide-react";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { navLinks, personalInfo } from "@/lib/data";
 import Magnetic from "./Magnetic";
 
@@ -23,6 +23,12 @@ export default function Footer() {
       icon: Mail,
       href: `mailto:${personalInfo.email}`,
       label: "Email",
+    },
+    { icon: FaInstagram, href: personalInfo.instagram, label: "Instagram" },
+    {
+      icon: FaWhatsapp,
+      href: "https://wa.me/916299313040?text=Hello!%20I%20visited%20your%20portfolio%20and%20I'd%20like%20to%20connect%20with%20you.",
+      label: "WhatsApp",
     },
   ];
 
