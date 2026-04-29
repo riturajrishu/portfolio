@@ -70,8 +70,8 @@ export default function Contact() {
     {
       icon: FaInstagram,
       label: "Instagram",
-      href: "https://instagram.com/",
-      display: "@rituraj",
+      href: personalInfo.instagram,
+      display: "@rituraj_1402",
       color: "#e1306c",
     },
     {

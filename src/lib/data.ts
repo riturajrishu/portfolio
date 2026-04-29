@@ -42,9 +42,10 @@ export const personalInfo = {
     "Engineering the future of the web",
   ],
   bio: `I'm a passionate Full Stack Developer who thrives at the intersection of design and engineering. With a strong foundation in modern web technologies, I build performant, accessible, and visually stunning applications that solve real-world problems. From architecting robust backends to crafting pixel-perfect frontends, I bring ideas to life with clean code and creative thinking.`,
-  email: "rituraj@example.com",
-  github: "https://github.com/rituraj",
-  linkedin: "https://linkedin.com/in/rituraj",
+  email: "itsriturajrishu@gmail.com",
+  github: "https://github.com/riturajrishu",
+  linkedin: "https://www.linkedin.com/in/riturajrishu/",
+  instagram: "https://www.instagram.com/rituraj_1402",
   resumeUrl: "/resume.pdf",
 };
 
