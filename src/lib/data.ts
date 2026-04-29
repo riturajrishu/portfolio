@@ -364,7 +364,7 @@ export const educationList: Education[] = [
   {
     id: "e1",
     degree: "Matriculation (10th)",
-    institution: "Vishanshvi Public School",
+    institution: "Vishashvi Public School",
     year: "2019 - 2020",
     location: "Patna, Bihar",
     description: "Completed foundational schooling with excellent academic standing. Developed an early interest in science, mathematics, and logical problem-solving that paved the way for my engineering journey.",
