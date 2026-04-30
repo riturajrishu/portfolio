@@ -190,6 +190,26 @@ export const projects: Project[] = [
     ],
   },
   {
+    id: "keeperx",
+    title: "KeeperX Enterprise — Password Manager",
+    description:
+      "An enterprise-level, zero-knowledge password manager featuring AES-256-GCM encryption, passkey WebAuthn support, and a built-in browser extension.",
+    longDescription:
+      "A highly secure full-stack password management system. It features client-side encryption (AES-256, Argon2) ensuring zero-knowledge architecture. Includes advanced modules like a Dark Web Breach Scanner, Vault Hygiene Audit, Shamir Secret Sharing recovery, built-in TOTP generator, and a cross-platform browser extension.",
+    image: "/projects/keeperx.webp",
+    techStack: ["React", "Node.js", "Express", "MongoDB", "WebAuthn"],
+    liveUrl: "https://keeperx-vault.onrender.com/",
+    githubUrl: "https://github.com/rituraj",
+    category: "fullstack",
+    featured: true,
+    features: [
+      "Zero-Knowledge AES-256 Encryption",
+      "Passkey (WebAuthn) & Biometric Login",
+      "Dark Web Breach Scanner & Audit",
+      "Browser Extension Integration",
+    ],
+  },
+  {
     id: "portfolio3d",
     title: "3D Developer Portfolio",
     description:
