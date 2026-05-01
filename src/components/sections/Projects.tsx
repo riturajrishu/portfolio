@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
@@ -74,14 +75,15 @@ export default function Projects() {
               onClick={() => router.push(`/projects/${project.id}`)}
             >
               {/* Image / Gradient Area */}
-              <div className="relative h-44 sm:h-48 bg-gradient-to-br from-primary/20 via-secondary/10 to-accent/20 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(3,0,20,0.95)] via-transparent to-transparent" />
-                {/* Decorative floating elements */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-4xl font-bold gradient-text opacity-20 group-hover:opacity-30 transition-opacity">
-                    {project.title.split("—")[0]?.trim().slice(0, 2)}
-                  </div>
-                </div>
+              <div className="relative h-44 sm:h-48 overflow-hidden bg-white/5 border-b border-white/5">
+                <Image
+                  src={project.image}
+                  alt={project.title}
+                  fill
+                  className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[rgba(3,0,20,0.95)] via-[rgba(3,0,20,0.3)] to-transparent pointer-events-none" />
                 {/* Featured badge */}
                 {project.featured && (
                   <span className="absolute top-3 right-3 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-primary/20 text-primary-light border border-primary/30 rounded-full backdrop-blur-sm">

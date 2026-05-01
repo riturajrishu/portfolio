@@ -117,23 +117,76 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    id: "neuraldocs",
-    title: "NeuralDocs — AI RAG Platform",
+    id: "keeperx",
+    title: "KeeperX Enterprise — Password Manager",
     description:
-      "Full-stack document intelligence system powered by RAG architecture with Gemini AI, enabling natural language queries over uploaded documents.",
+      "An enterprise-level, zero-knowledge password manager featuring AES-256-GCM encryption, passkey WebAuthn support, and a built-in browser extension.",
     longDescription:
-      "A production-grade Retrieval-Augmented Generation platform that lets users upload documents and interact with them through natural language. Features vector-based semantic search, real-time chat with document context, and multi-format support.",
-    image: "/projects/neuraldocs.webp",
-    techStack: ["Next.js", "Node.js", "MongoDB", "Gemini AI", "LangChain"],
-    liveUrl: "#",
+      "A highly secure full-stack password management system. It features client-side encryption (AES-256, Argon2) ensuring zero-knowledge architecture. Includes advanced modules like a Dark Web Breach Scanner, Vault Hygiene Audit, Shamir Secret Sharing recovery, built-in TOTP generator, and a cross-platform browser extension.",
+    image: "https://res.cloudinary.com/dl89ty6uu/image/upload/v1777660345/Screenshot_436_u1moxq.png",
+    techStack: ["React", "Node.js", "Express", "MongoDB", "WebAuthn"],
+    liveUrl: "https://keeperx-vault.onrender.com/",
     githubUrl: "https://github.com/rituraj",
     category: "fullstack",
     featured: true,
     features: [
-      "RAG-powered document Q&A",
-      "Vector embedding search",
-      "Multi-format document support",
-      "Real-time streaming responses",
+      "Zero-Knowledge AES-256 Encryption",
+      "Passkey (WebAuthn) & Biometric Login",
+      "Dark Web Breach Scanner & Audit",
+      "Browser Extension Integration",
+    ],
+  },
+  {
+    id: "chatapp",
+    title: "Real-Time Chat Application",
+    description:
+      "WhatsApp-style chat application with real-time messaging, delivery status tracking, video/audio calling, and push notifications.",
+    longDescription:
+      "A feature-rich real-time communication platform built with Socket.io and WebRTC. Supports text messaging, file sharing, delivery status (double ticks), voice/video calls, and Firebase Cloud Messaging for push notifications.",
+    image: "https://res.cloudinary.com/dl89ty6uu/image/upload/v1777660785/Screenshot_438_drclgx.png",
+    techStack: [
+      "React",
+      "Socket.io",
+      "WebRTC",
+      "Node.js",
+      "Firebase",
+      "Zustand",
+    ],
+    liveUrl: "https://chatterx.onrender.com/",
+    githubUrl: "https://github.com/rituraj",
+    category: "fullstack",
+    featured: true,
+    features: [
+      "Real-time messaging with Socket.io",
+      "Video & audio calling (WebRTC)",
+      "Message delivery status tracking",
+      "Push notifications via FCM",
+    ],
+  },
+  {
+    id: "portfolio3d",
+    title: "3D Developer Portfolio",
+    description:
+      "Award-winning 3D animated portfolio website with Three.js particles, glassmorphism UI, and cinematic transitions.",
+    longDescription:
+      "A premium developer portfolio featuring interactive 3D backgrounds, custom cursor effects, smooth scroll animations, and enterprise-level UI design with glassmorphism cards and neon gradient accents.",
+    image: "https://res.cloudinary.com/dl89ty6uu/image/upload/v1777661760/Screenshot_444_cw5qcn.png",
+    techStack: [
+      "Next.js",
+      "Three.js",
+      "Framer Motion",
+      "Tailwind CSS",
+      "TypeScript",
+    ],
+    liveUrl: "https://riturajrishu.onrender.com/",
+    githubUrl: "https://github.com/rituraj",
+    category: "web",
+    featured: false,
+    features: [
+      "3D animated particle background",
+      "Glassmorphism card design",
+      "Custom cursor effects",
+      "Smooth scroll animations",
     ],
   },
   {
@@ -143,7 +196,7 @@ export const projects: Project[] = [
       "A cinematic, personalized birthday celebration platform with real-time collaboration, AI-generated messages, and interactive wish pages.",
     longDescription:
       "An immersive full-stack application for creating and sharing personalized birthday experiences. Features collaborative wish boards, AI-assisted message generation, scheduled reveals, and a stunning cinematic UI.",
-    image: "/projects/wishcraft.webp",
+    image: "https://res.cloudinary.com/dl89ty6uu/image/upload/v1777660778/Screenshot_439_dgubju.png",
     techStack: [
       "Next.js",
       "Tailwind CSS",
@@ -163,76 +216,23 @@ export const projects: Project[] = [
     ],
   },
   {
-    id: "chatapp",
-    title: "Real-Time Chat Application",
+    id: "neuraldocs",
+    title: "NeuralDocs — AI RAG Platform",
     description:
-      "WhatsApp-style chat application with real-time messaging, delivery status tracking, video/audio calling, and push notifications.",
+      "Full-stack document intelligence system powered by RAG architecture with Gemini AI, enabling natural language queries over uploaded documents.",
     longDescription:
-      "A feature-rich real-time communication platform built with Socket.io and WebRTC. Supports text messaging, file sharing, delivery status (double ticks), voice/video calls, and Firebase Cloud Messaging for push notifications.",
-    image: "/projects/chatapp.webp",
-    techStack: [
-      "React",
-      "Socket.io",
-      "WebRTC",
-      "Node.js",
-      "Firebase",
-      "Zustand",
-    ],
+      "A production-grade Retrieval-Augmented Generation platform that lets users upload documents and interact with them through natural language. Features vector-based semantic search, real-time chat with document context, and multi-format support.",
+    image: "https://res.cloudinary.com/dl89ty6uu/image/upload/v1777661245/Screenshot_442_hyjbcs.png",
+    techStack: ["Next.js", "Node.js", "MongoDB", "Gemini AI", "LangChain"],
     liveUrl: "#",
     githubUrl: "https://github.com/rituraj",
     category: "fullstack",
     featured: true,
     features: [
-      "Real-time messaging with Socket.io",
-      "Video & audio calling (WebRTC)",
-      "Message delivery status tracking",
-      "Push notifications via FCM",
-    ],
-  },
-  {
-    id: "keeperx",
-    title: "KeeperX Enterprise — Password Manager",
-    description:
-      "An enterprise-level, zero-knowledge password manager featuring AES-256-GCM encryption, passkey WebAuthn support, and a built-in browser extension.",
-    longDescription:
-      "A highly secure full-stack password management system. It features client-side encryption (AES-256, Argon2) ensuring zero-knowledge architecture. Includes advanced modules like a Dark Web Breach Scanner, Vault Hygiene Audit, Shamir Secret Sharing recovery, built-in TOTP generator, and a cross-platform browser extension.",
-    image: "/projects/keeperx.webp",
-    techStack: ["React", "Node.js", "Express", "MongoDB", "WebAuthn"],
-    liveUrl: "https://keeperx-vault.onrender.com/",
-    githubUrl: "https://github.com/rituraj",
-    category: "fullstack",
-    featured: true,
-    features: [
-      "Zero-Knowledge AES-256 Encryption",
-      "Passkey (WebAuthn) & Biometric Login",
-      "Dark Web Breach Scanner & Audit",
-      "Browser Extension Integration",
-    ],
-  },
-  {
-    id: "portfolio3d",
-    title: "3D Developer Portfolio",
-    description:
-      "Award-winning 3D animated portfolio website with Three.js particles, glassmorphism UI, and cinematic transitions.",
-    longDescription:
-      "A premium developer portfolio featuring interactive 3D backgrounds, custom cursor effects, smooth scroll animations, and enterprise-level UI design with glassmorphism cards and neon gradient accents.",
-    image: "/projects/portfolio.webp",
-    techStack: [
-      "Next.js",
-      "Three.js",
-      "Framer Motion",
-      "Tailwind CSS",
-      "TypeScript",
-    ],
-    liveUrl: "#",
-    githubUrl: "https://github.com/rituraj",
-    category: "web",
-    featured: false,
-    features: [
-      "3D animated particle background",
-      "Glassmorphism card design",
-      "Custom cursor effects",
-      "Smooth scroll animations",
+      "RAG-powered document Q&A",
+      "Vector embedding search",
+      "Multi-format document support",
+      "Real-time streaming responses",
     ],
   },
   {
@@ -242,7 +242,7 @@ export const projects: Project[] = [
       "Full-featured admin panel with employee management, payroll processing, analytics, and role-based access control.",
     longDescription:
       "A comprehensive admin dashboard for enterprise resource management. Features employee CRUD operations, payroll automation, data visualization with charts, dark/light theme toggle, and granular RBAC.",
-    image: "/projects/admin.webp",
+    image: "https://res.cloudinary.com/dl89ty6uu/image/upload/v1777661887/Screenshot_445_ftgrrk.png",
     techStack: ["React", "Node.js", "Express", "MySQL", "Chart.js"],
     liveUrl: "#",
     githubUrl: "https://github.com/rituraj",

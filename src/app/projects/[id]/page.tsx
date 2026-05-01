@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { projects } from "@/lib/data";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import { Metadata } from "next";
@@ -51,9 +52,17 @@ export default async function ProjectPage({
         </Link>
 
         {/* Hero Section */}
-        <div className="relative h-[40vh] sm:h-[50vh] min-h-[300px] rounded-3xl overflow-hidden mb-16 glass border-border/50">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/20 to-accent/20" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+        <div className="relative h-[40vh] sm:h-[50vh] min-h-[300px] rounded-3xl overflow-hidden mb-16 glass border-border/50 group">
+          <Image
+            src={project.image}
+            alt={project.title}
+            fill
+            priority
+            className="object-cover object-top opacity-40 transition-transform duration-1000 group-hover:scale-105"
+            sizes="(max-width: 1200px) 100vw, 1200px"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20 mix-blend-overlay" />
 
           <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 z-10 flex flex-col justify-end h-full">
             <div className="flex items-center gap-3 mb-4">
