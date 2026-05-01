@@ -42,7 +42,7 @@ export default async function ProjectPage({
         {/* Navigation */}
         <Link
           href="/#projects"
-          className="inline-flex items-center gap-2 text-text-muted hover:text-white transition-colors mb-12 group"
+          className="inline-flex items-center gap-2 text-text-muted hover:text-white transition-colors mb-8 sm:mb-12 group text-sm sm:text-base"
         >
           <ArrowLeft
             size={16}
@@ -64,21 +64,21 @@ export default async function ProjectPage({
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20 mix-blend-overlay" />
 
-          <div className="absolute bottom-0 left-0 right-0 p-8 sm:p-12 z-10 flex flex-col justify-end h-full">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-white/10 text-white rounded-full backdrop-blur-md">
+          <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-10 lg:p-12 z-10 flex flex-col justify-end h-full">
+            <div className="flex items-center gap-3 mb-3 sm:mb-4">
+              <span className="px-3 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-white/10 text-white rounded-full backdrop-blur-md">
                 {project.category}
               </span>
               {project.featured && (
-                <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-primary/20 text-primary-light border border-primary/30 rounded-full backdrop-blur-md">
+                <span className="px-3 py-1 text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-primary/20 text-primary-light border border-primary/30 rounded-full backdrop-blur-md">
                   Featured
                 </span>
               )}
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white mb-4">
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-bold text-white mb-3 sm:mb-4 leading-tight">
               {project.title.split("—")[0].trim()}
             </h1>
-            <p className="text-xl sm:text-2xl text-text-secondary max-w-2xl font-light">
+            <p className="text-base sm:text-xl lg:text-2xl text-text-secondary max-w-2xl font-light line-clamp-3 sm:line-clamp-none">
               {project.title.split("—")[1]?.trim() || project.description}
             </p>
           </div>
