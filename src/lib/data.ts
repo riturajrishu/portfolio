@@ -45,7 +45,7 @@ export const personalInfo = {
   email: "itsriturajrishu@gmail.com",
   github: "https://github.com/riturajrishu",
   linkedin: "https://www.linkedin.com/in/riturajrishu/",
-  instagram: "https://www.instagram.com/rituraj_1402",
+  instagram: "https://www.instagram.com/itsriturajrishu",
   resumeUrl: "/resume.pdf",
 };
 
