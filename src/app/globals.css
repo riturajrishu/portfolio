@@ -115,6 +115,13 @@ body {
   overflow-x: hidden;
 }
 
+/* Hide default cursor on devices that support hover (desktops) */
+@media (hover: hover) and (pointer: fine) {
+  body, a, button, .magnetic {
+    cursor: none !important;
+  }
+}
+
 /* ─────────────── ACCESSIBILITY ─────────────── */
 *:focus-visible {
   outline: 2px solid var(--color-primary);

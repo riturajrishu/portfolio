@@ -2,6 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScrolling from "@/components/ui/SmoothScrolling";
+import CustomCursor from "@/components/ui/CustomCursor";
+import { SoundProvider } from "@/lib/SoundContext";
+import SoundWidget from "@/components/ui/SoundWidget";
+import TerminalEasterEgg from "@/components/ui/TerminalEasterEgg";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -53,7 +57,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} dark`} style={{ colorScheme: "dark" }}>
       <body className="antialiased bg-[#030014] text-[#f1f5f9] min-h-screen overflow-x-hidden">
-        <SmoothScrolling>{children}</SmoothScrolling>
+        <SoundProvider>
+          <TerminalEasterEgg />
+          <CustomCursor />
+          <SoundWidget />
+          <SmoothScrolling>{children}</SmoothScrolling>
+        </SoundProvider>
       </body>
     </html>
   );

@@ -8,6 +8,7 @@ import { useLenis } from "lenis/react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { galleryImages, GalleryImage } from "@/lib/data";
 import { X, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
+import gsap from "gsap";
 
 /* ─────────────── LIGHTBOX ─────────────── */
 function Lightbox({
@@ -248,6 +249,85 @@ function Lightbox({
   return createPortal(lightboxContent, document.body);
 }
 
+/* ─────────────── LIQUID CARD COMPONENT ─────────────── */
+function LiquidCard({ image, onClick, index }: { image: GalleryImage; onClick: () => void; index: number }) {
+  const filterId = `liquid-${image.id}`;
+  const displacementRef = useRef<SVGFEDisplacementMapElement>(null);
+  const turbRef = useRef<SVGFETurbulenceElement>(null);
+
+  const handleMouseEnter = () => {
+    if (displacementRef.current && turbRef.current) {
+      gsap.killTweensOf([displacementRef.current, turbRef.current]);
+      // Animate distortion scale
+      gsap.to(displacementRef.current, { attr: { scale: 40 }, duration: 0.6, ease: "power2.out" });
+      // Shift base frequency to make the "water" flow
+      gsap.to(turbRef.current, { attr: { baseFrequency: "0.03 0.03" }, duration: 0.6, ease: "power2.out" });
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (displacementRef.current && turbRef.current) {
+      gsap.killTweensOf([displacementRef.current, turbRef.current]);
+      gsap.to(displacementRef.current, { attr: { scale: 0 }, duration: 0.8, ease: "power2.out" });
+      gsap.to(turbRef.current, { attr: { baseFrequency: "0.015 0.015" }, duration: 0.8, ease: "power2.out" });
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95, y: 20 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="relative rounded-2xl overflow-hidden group cursor-pointer glass border-white/10 shadow-lg break-inside-avoid inline-block w-full magnetic mb-4 sm:mb-6"
+    >
+      {/* SVG Liquid Filter Definition */}
+      <svg className="absolute w-0 h-0 pointer-events-none">
+        <filter id={filterId} x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence ref={turbRef} type="fractalNoise" baseFrequency="0.015 0.015" numOctaves="3" result="noise" />
+          <feDisplacementMap 
+            ref={displacementRef} 
+            in="SourceGraphic" 
+            in2="noise" 
+            scale="0" 
+            xChannelSelector="R" 
+            yChannelSelector="G" 
+          />
+        </filter>
+      </svg>
+
+      <div 
+        className="relative w-full h-auto" 
+        style={{ filter: `url(#${filterId})` }}
+      >
+        <Image
+          src={image.src}
+          alt={image.title}
+          width={image.width}
+          height={image.height}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      </div>
+
+      <div className="absolute inset-0 bg-gradient-to-t from-[rgba(3,0,20,0.95)] via-[rgba(3,0,20,0.2)] to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300 pointer-events-none" />
+
+      <div className="absolute inset-0 p-5 flex flex-col justify-end transform transition-transform duration-300 md:translate-y-4 md:group-hover:translate-y-0 pointer-events-none">
+        <div className="w-8 h-1 bg-primary mb-2 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity delay-100 duration-300" />
+        <h3 className="text-lg font-bold text-white mb-1 line-clamp-1 drop-shadow-md">
+          {image.title}
+        </h3>
+        <p className="text-text-secondary text-xs line-clamp-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity delay-100 duration-300">
+          Click to view full size
+        </p>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─────────────── GALLERY SECTION ─────────────── */
 export default function Gallery() {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
@@ -260,40 +340,14 @@ export default function Gallery() {
           subtitle="A glimpse into my journey, awards, and milestones"
         />
 
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 sm:gap-6 mt-12 space-y-4 sm:space-y-6">
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 sm:gap-6 mt-12">
           {galleryImages.map((image, i) => (
-            <motion.div
+            <LiquidCard
               key={image.id}
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
+              image={image}
+              index={i}
               onClick={() => setSelectedImage(image)}
-              className="relative rounded-2xl overflow-hidden group cursor-pointer glass border-white/10 shadow-lg break-inside-avoid inline-block w-full"
-            >
-              <div className="relative w-full h-auto">
-                <Image
-                  src={image.src}
-                  alt={image.title}
-                  width={image.width}
-                  height={image.height}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-              </div>
-
-              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(3,0,20,0.95)] via-[rgba(3,0,20,0.2)] to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
-
-              <div className="absolute inset-0 p-5 flex flex-col justify-end transform transition-transform duration-300 md:translate-y-4 md:group-hover:translate-y-0">
-                <div className="w-8 h-1 bg-primary mb-2 rounded-full md:opacity-0 md:group-hover:opacity-100 transition-opacity delay-100 duration-300" />
-                <h3 className="text-lg font-bold text-white mb-1 line-clamp-1 drop-shadow-md">
-                  {image.title}
-                </h3>
-                <p className="text-text-secondary text-xs line-clamp-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity delay-100 duration-300">
-                  Click to view full size
-                </p>
-              </div>
-            </motion.div>
+            />
           ))}
         </div>
       </div>

@@ -8,6 +8,7 @@ import { ExternalLink } from "lucide-react";
 import { FaGithub } from "react-icons/fa";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { projects, type Project } from "@/lib/data";
+import TiltCard from "@/components/ui/TiltCard";
 
 const filters = ["All", "Featured", "Web", "Full Stack"] as const;
 
@@ -64,17 +65,13 @@ export default function Projects() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
-              whileHover={{
-                y: -8,
-                rotateX: 2,
-                rotateY: -2,
-                transition: { duration: 0.3 },
-              }}
-              style={{ perspective: 1000 }}
-              className="glass rounded-xl overflow-hidden group cursor-pointer"
-              onClick={() => router.push(`/projects/${project.id}`)}
+              className="h-full"
             >
-              {/* Image / Gradient Area */}
+              <TiltCard
+                className="glass rounded-xl h-full cursor-pointer magnetic"
+                onClick={() => router.push(`/projects/${project.id}`)}
+              >
+                {/* Image / Gradient Area */}
               <div className="relative h-44 sm:h-48 overflow-hidden bg-white/5 border-b border-white/5">
                 <Image
                   src={project.image}
@@ -140,6 +137,7 @@ export default function Projects() {
                   </a>
                 </div>
               </div>
+              </TiltCard>
             </motion.div>
           ))}
         </div>
