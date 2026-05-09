@@ -49,6 +49,38 @@ export default function RouteTransitionLoader() {
   const isInitialMount = useRef(true);
   const lastPathname = useRef(pathname);
 
+  // Trigger instantly on link click to mask Next.js routing delay
+  useEffect(() => {
+    const handleLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest("a");
+      
+      if (!link) return;
+      
+      const href = link.getAttribute("href");
+      const targetAttr = link.getAttribute("target");
+      
+      // Check if it's an internal link
+      if (href && href.startsWith("/") && !href.startsWith("//") && targetAttr !== "_blank") {
+        const currentPath = window.location.pathname;
+        const targetPath = href.split('#')[0] || "/";
+        
+        // Only trigger if we are actually navigating to a different page
+        if (targetPath !== currentPath) {
+          setIsTransitioning(true);
+        }
+      }
+    };
+
+    // Use capture phase to catch the click instantly
+    document.addEventListener("click", handleLinkClick, true);
+    
+    return () => {
+      document.removeEventListener("click", handleLinkClick, true);
+    };
+  }, []);
+
+  // Also trigger on pathname change (for browser back/forward buttons)
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
@@ -58,15 +90,19 @@ export default function RouteTransitionLoader() {
     if (pathname !== lastPathname.current) {
       lastPathname.current = pathname;
       setIsTransitioning(true);
-
-      // Hide after exactly 1.5 seconds
-      const timeout = setTimeout(() => {
-        setIsTransitioning(false);
-      }, 1500);
-
-      return () => clearTimeout(timeout);
     }
   }, [pathname]);
+
+  // Handle the automatic fade-out
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (isTransitioning) {
+      timeout = setTimeout(() => {
+        setIsTransitioning(false);
+      }, 1500);
+    }
+    return () => clearTimeout(timeout);
+  }, [isTransitioning]);
 
   return (
     <AnimatePresence>
