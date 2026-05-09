@@ -5,7 +5,6 @@ import { motion, useMotionValue, useSpring } from "framer-motion";
 import { useSound } from "@/lib/SoundContext";
 
 export default function CustomCursor() {
-  const { playHover, playClick } = useSound();
   const [isMobile, setIsMobile] = useState(true); // Default true to prevent flash on mobile
   const [isHovering, setIsHovering] = useState(false);
   const isHoveringRef = useRef(false);
@@ -50,7 +49,6 @@ export default function CustomCursor() {
         if (!isHoveringRef.current) {
           isHoveringRef.current = true;
           setIsHovering(true);
-          playHover();
         }
       } else {
         if (isHoveringRef.current) {
@@ -60,22 +58,14 @@ export default function CustomCursor() {
       }
     };
 
-    const handleMouseDown = () => {
-      if (isHoveringRef.current) {
-        playClick();
-      }
-    };
-
     window.addEventListener("mousemove", moveCursor);
     window.addEventListener("mouseover", handleMouseOver);
-    window.addEventListener("mousedown", handleMouseDown);
 
     return () => {
       window.removeEventListener("mousemove", moveCursor);
       window.removeEventListener("mouseover", handleMouseOver);
-      window.removeEventListener("mousedown", handleMouseDown);
     };
-  }, [isMobile, cursorX, cursorY, playHover, playClick]);
+  }, [isMobile, cursorX, cursorY]);
 
   if (isMobile) return null;
 

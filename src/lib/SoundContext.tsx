@@ -92,8 +92,8 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
         gainNode.gain.cancelScheduledValues(ctx.currentTime);
         // Start the fade from the exact current volume
         gainNode.gain.setValueAtTime(gainNode.gain.value, ctx.currentTime);
-        // Smooth fade in
-        gainNode.gain.setTargetAtTime(0.15, ctx.currentTime, 1);
+        // Smooth fade in - significantly increased ambient volume
+        gainNode.gain.setTargetAtTime(0.3, ctx.currentTime, 1);
       }
     } else {
       const ctx = audioCtxRef.current;
@@ -110,56 +110,102 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isMuted]);
 
-  // Clean up on unmount
+  // Handle global UI sounds independently of the visual cursor so it works on mobile
+  const isMutedRef = useRef(isMuted);
   useEffect(() => {
-    return () => {
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close();
+    isMutedRef.current = isMuted;
+  }, [isMuted]);
+
+  useEffect(() => {
+    let hoverState = false;
+
+    const handleMouseOver = (e: MouseEvent) => {
+      if (isMutedRef.current || !audioCtxRef.current) return;
+      const target = e.target as HTMLElement;
+      if (!target || !target.tagName) return;
+
+      const isInteractive = 
+        target.tagName.toLowerCase() === "a" ||
+        target.tagName.toLowerCase() === "button" ||
+        target.closest("a") ||
+        target.closest("button") ||
+        target.closest(".magnetic") ||
+        target.classList.contains("magnetic");
+
+      if (isInteractive) {
+        if (!hoverState) {
+          hoverState = true;
+          const ctx = audioCtxRef.current;
+          if (ctx.state === "suspended") ctx.resume();
+          
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(1000, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 0.05);
+          
+          gain.gain.setValueAtTime(0.25, ctx.currentTime); // Much louder hover
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+          
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.05);
+        }
+      } else {
+        hoverState = false;
       }
+    };
+
+    const handleGlobalClick = (e: MouseEvent | TouchEvent) => {
+      if (isMutedRef.current || !audioCtxRef.current) return;
+      const target = e.target as HTMLElement;
+      if (!target || !target.tagName) return;
+
+      const isInteractive = 
+        target.tagName.toLowerCase() === "a" ||
+        target.tagName.toLowerCase() === "button" ||
+        target.closest("a") ||
+        target.closest("button") ||
+        target.closest(".magnetic") ||
+        target.classList.contains("magnetic");
+
+      if (isInteractive) {
+        const ctx = audioCtxRef.current;
+        if (ctx.state === "suspended") ctx.resume();
+        
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(400, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
+        
+        gain.gain.setValueAtTime(0.5, ctx.currentTime); // Much louder click
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.1);
+      }
+    };
+
+    window.addEventListener("mouseover", handleMouseOver);
+    window.addEventListener("mousedown", handleGlobalClick);
+    window.addEventListener("touchstart", handleGlobalClick, { passive: true });
+
+    return () => {
+      window.removeEventListener("mouseover", handleMouseOver);
+      window.removeEventListener("mousedown", handleGlobalClick);
+      window.removeEventListener("touchstart", handleGlobalClick);
     };
   }, []);
 
-  const playHover = () => {
-    if (isMuted || !audioCtxRef.current) return;
-    const ctx = audioCtxRef.current;
-    
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    
-    // Premium UI mechanical tick - Increased volume
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(1000, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 0.05);
-    
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.05);
-  };
-
-  const playClick = () => {
-    if (isMuted || !audioCtxRef.current) return;
-    const ctx = audioCtxRef.current;
-    
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    
-    // Premium UI satisfying Pop/Drop - Increased volume
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(400, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
-    
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.1);
-  };
+  // Expose empty functions for backward compatibility if needed by other components
+  const playHover = () => {};
+  const playClick = () => {};
 
   return (
     <SoundContext.Provider value={{ isMuted, toggleMute: () => setIsMuted(!isMuted), playHover, playClick }}>
