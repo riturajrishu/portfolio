@@ -116,6 +116,9 @@ body {
 }
 
 /* Removed custom cursor hiding rule to keep the default cursor visible everywhere */
+body, html {
+  cursor: auto !important;
+}
 
 /* ─────────────── ACCESSIBILITY ─────────────── */
 *:focus-visible {
