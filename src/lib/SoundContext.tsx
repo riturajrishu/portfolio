@@ -79,15 +79,33 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isMuted) {
       initAudio();
-      if (audioCtxRef.current?.state === "suspended") {
-        audioCtxRef.current.resume();
+      
+      const ctx = audioCtxRef.current;
+      const gainNode = ambientGainRef.current;
+
+      if (ctx?.state === "suspended") {
+        ctx.resume();
       }
-      // Smooth fade in - Increased volume from 0.04 to 0.15
-      ambientGainRef.current?.gain.setTargetAtTime(0.15, audioCtxRef.current!.currentTime, 2);
+      
+      if (ctx && gainNode) {
+        // Cancel any pending transitions to avoid overlapping values
+        gainNode.gain.cancelScheduledValues(ctx.currentTime);
+        // Start the fade from the exact current volume
+        gainNode.gain.setValueAtTime(gainNode.gain.value, ctx.currentTime);
+        // Smooth fade in
+        gainNode.gain.setTargetAtTime(0.15, ctx.currentTime, 1);
+      }
     } else {
-      // Smooth fade out
-      if (ambientGainRef.current && audioCtxRef.current) {
-        ambientGainRef.current.gain.setTargetAtTime(0, audioCtxRef.current.currentTime, 0.5);
+      const ctx = audioCtxRef.current;
+      const gainNode = ambientGainRef.current;
+      
+      if (ctx && gainNode) {
+        // Cancel any pending transitions
+        gainNode.gain.cancelScheduledValues(ctx.currentTime);
+        // Start the fade from the exact current volume
+        gainNode.gain.setValueAtTime(gainNode.gain.value, ctx.currentTime);
+        // Smooth fade out
+        gainNode.gain.setTargetAtTime(0, ctx.currentTime, 0.2); // Faster fade out
       }
     }
   }, [isMuted]);
