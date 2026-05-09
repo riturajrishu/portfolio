@@ -8,11 +8,21 @@ import gsap from "gsap";
 import LoaderParticles from "../canvas/LoaderParticles";
 
 export default function LoadingScreen() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      return !sessionStorage.getItem("portfolio_loaded");
+    }
+    return true;
+  });
 
   const handleComplete = () => {
     // Fade out the entire loading screen after the flythrough
-    setTimeout(() => setLoading(false), 200);
+    setTimeout(() => {
+      setLoading(false);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("portfolio_loaded", "true");
+      }
+    }, 200);
   };
 
   return (
