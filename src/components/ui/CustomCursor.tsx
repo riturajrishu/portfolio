@@ -81,11 +81,15 @@ export default function CustomCursor() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[9999] mix-blend-difference hidden md:block"
+      className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[999999] hidden md:block"
       style={{
         x: cursorXSpring,
         y: cursorYSpring,
-        backgroundColor: "white",
+        backgroundColor: "rgba(255, 255, 255, 0.15)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+        border: "1px solid rgba(255, 255, 255, 0.4)",
+        boxShadow: "0 0 10px rgba(255, 255, 255, 0.1)",
       }}
       animate={{
         scale: isHovering ? 2.5 : 1,
