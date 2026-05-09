@@ -115,12 +115,7 @@ body {
   overflow-x: hidden;
 }
 
-/* Hide default cursor on devices that support hover (desktops) */
-@media (hover: hover) and (pointer: fine) {
-  body, a, button, .magnetic {
-    cursor: none !important;
-  }
-}
+/* Removed custom cursor hiding rule to keep the default cursor visible everywhere */
 
 /* ─────────────── ACCESSIBILITY ─────────────── */
 *:focus-visible {
