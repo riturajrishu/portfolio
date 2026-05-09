@@ -88,8 +88,11 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
+        className="absolute bottom-16 md:bottom-12 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2"
       >
+        <span className="text-[10px] tracking-[0.3em] text-text-muted uppercase font-mono magnetic cursor-pointer" onClick={() => document.querySelector("#about")?.scrollIntoView({ behavior: "smooth" })}>
+          Scroll Down
+        </span>
         <motion.button
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -98,7 +101,7 @@ export default function Hero() {
               .querySelector("#about")
               ?.scrollIntoView({ behavior: "smooth" })
           }
-          className="text-text-muted hover:text-white transition-colors p-2"
+          className="text-text-muted hover:text-white transition-colors p-2 magnetic"
           aria-label="Scroll down"
         >
           <ChevronDown size={24} />

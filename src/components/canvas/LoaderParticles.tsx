@@ -164,7 +164,7 @@ void main() {
 
 export default function LoaderParticles({ onComplete }: { onComplete: () => void }) {
     const [isClient, setIsClient] = useState(false);
-    
+
     useEffect(() => {
         setIsClient(true);
     }, []);
@@ -205,7 +205,7 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
         for (let i = 0; i < particleCount; i++) {
             const phi = Math.acos(-1 + (2 * i) / particleCount);
             const theta = Math.sqrt(particleCount * Math.PI) * phi;
-            
+
             spherePos[i * 3] = sphereRadius * Math.cos(theta) * Math.sin(phi);
             spherePos[i * 3 + 1] = sphereRadius * Math.sin(theta) * Math.sin(phi);
             spherePos[i * 3 + 2] = sphereRadius * Math.cos(phi);
@@ -214,24 +214,25 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
         // 3. Generate Text Positions (<RR />)
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-        const w = 600;
-        const h = 200;
+        const w = 800;
+        const h = 400;
         canvas.width = w;
         canvas.height = h;
-        
+
         if (ctx) {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, w, h);
             ctx.fillStyle = "white";
             // Use system fonts for reliability
-            ctx.font = "bold 130px system-ui, -apple-system, sans-serif";
+            ctx.font = "bold 120px system-ui, -apple-system, sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText("RISHU", w / 2, h / 2);
+            ctx.fillText("RITU RAJ", w / 2, h / 2 - 60);
+            ctx.fillText("  RISHU", w / 2, h / 2 + 60);
 
             const imageData = ctx.getImageData(0, 0, w, h).data;
             const validPixels = [];
-            
+
             // Sample pixels (step determines density)
             for (let y = 0; y < h; y += 3) {
                 for (let x = 0; x < w; x += 3) {
@@ -257,10 +258,10 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
             }
         }
 
-        return { 
-            count: particleCount, 
-            randomPositions: randomPos, 
-            spherePositions: spherePos, 
+        return {
+            count: particleCount,
+            randomPositions: randomPos,
+            spherePositions: spherePos,
             textPositions: textPos,
             sizes: sizesArr
         };

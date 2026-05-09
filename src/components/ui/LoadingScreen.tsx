@@ -4,13 +4,17 @@ import { useState, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { AnimatePresence, motion } from "framer-motion";
-import gsap from "gsap";
 import LoaderParticles from "../canvas/LoaderParticles";
+
+// Use an in-memory module variable instead of sessionStorage.
+// This ensures the loading screen plays on hard reloads (F5) because JS memory resets,
+// but skips during Next.js client-side navigation (like going back from a project page).
+let hasPlayedInitialAnimation = false;
 
 export default function LoadingScreen() {
   const [loading, setLoading] = useState(() => {
     if (typeof window !== "undefined") {
-      return !sessionStorage.getItem("portfolio_loaded");
+      return !hasPlayedInitialAnimation;
     }
     return true;
   });
@@ -19,9 +23,7 @@ export default function LoadingScreen() {
     // Fade out the entire loading screen after the flythrough
     setTimeout(() => {
       setLoading(false);
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("portfolio_loaded", "true");
-      }
+      hasPlayedInitialAnimation = true;
     }, 200);
   };
 
@@ -61,17 +63,17 @@ export default function LoadingScreen() {
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 5 }}
           >
             <color attach="background" args={["#030014"]} />
-            
+
             {/* The Custom Particle System */}
             <LoaderParticles onComplete={handleComplete} />
 
             {/* Cinematic Post-Processing */}
             <EffectComposer>
-              <Bloom 
-                luminanceThreshold={0.2} 
-                luminanceSmoothing={0.9} 
-                intensity={2.0} 
-                mipmapBlur 
+              <Bloom
+                luminanceThreshold={0.2}
+                luminanceSmoothing={0.9}
+                intensity={2.0}
+                mipmapBlur
               />
             </EffectComposer>
           </Canvas>

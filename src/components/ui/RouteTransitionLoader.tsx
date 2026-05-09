@@ -3,26 +3,37 @@
 import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { EffectComposer, Bloom, Glitch } from "@react-three/postprocessing";
-import { GlitchMode } from "postprocessing";
+import { EffectComposer, Bloom, Glitch, ChromaticAberration } from "@react-three/postprocessing";
+import { GlitchMode, BlendFunction } from "postprocessing";
 import { AnimatePresence, motion } from "framer-motion";
 import * as THREE from "three";
 
 function SpinningCore() {
   const meshRef = useRef<THREE.Mesh>(null);
   const coreRef = useRef<THREE.Mesh>(null);
+  const ringRef1 = useRef<THREE.Mesh>(null);
+  const ringRef2 = useRef<THREE.Mesh>(null);
 
   useFrame((state) => {
-    if (meshRef.current && coreRef.current) {
-      meshRef.current.rotation.x = state.clock.elapsedTime * 0.8;
-      meshRef.current.rotation.y = state.clock.elapsedTime * 1.2;
+    if (meshRef.current && coreRef.current && ringRef1.current && ringRef2.current) {
+      const t = state.clock.elapsedTime;
       
-      coreRef.current.rotation.x = state.clock.elapsedTime * -0.5;
-      coreRef.current.rotation.y = state.clock.elapsedTime * -0.8;
+      meshRef.current.rotation.x = t * 1.5;
+      meshRef.current.rotation.y = t * 2.0;
+      
+      coreRef.current.rotation.x = t * -1.0;
+      coreRef.current.rotation.y = t * -1.5;
 
-      // Add a slight pulsing scale effect
-      const scale = 1 + Math.sin(state.clock.elapsedTime * 8) * 0.05;
+      ringRef1.current.rotation.x = t * 4.0;
+      ringRef1.current.rotation.y = t * 0.5;
+      
+      ringRef2.current.rotation.x = t * 0.5;
+      ringRef2.current.rotation.y = t * -4.0;
+
+      // Add an intense pulsing scale effect
+      const scale = 1 + Math.sin(t * 15) * 0.08;
       meshRef.current.scale.set(scale, scale, scale);
+      coreRef.current.scale.set(scale, scale, scale);
     }
   });
 
@@ -33,11 +44,21 @@ function SpinningCore() {
         <icosahedronGeometry args={[2, 1]} />
         <meshBasicMaterial color="#7c3aed" wireframe={true} transparent opacity={0.6} />
       </mesh>
+
+      {/* Fast Spinning Rings */}
+      <mesh ref={ringRef1}>
+        <torusGeometry args={[2.5, 0.02, 16, 100]} />
+        <meshBasicMaterial color="#06b6d4" transparent opacity={0.8} />
+      </mesh>
+      <mesh ref={ringRef2}>
+        <torusGeometry args={[2.8, 0.02, 16, 100]} />
+        <meshBasicMaterial color="#3b82f6" transparent opacity={0.8} />
+      </mesh>
       
-      {/* Inner solid core */}
+      {/* Inner solid glowing core */}
       <mesh ref={coreRef}>
         <octahedronGeometry args={[0.8, 0]} />
-        <meshBasicMaterial color="#3b82f6" />
+        <meshBasicMaterial color="#ffffff" />
       </mesh>
     </group>
   );
@@ -112,7 +133,7 @@ export default function RouteTransitionLoader() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="fixed inset-0 z-[99999] bg-[#030014]/95 backdrop-blur-xl flex flex-col items-center justify-center overflow-hidden pointer-events-auto"
+          className="fixed inset-0 z-[99999] bg-[#030014] flex flex-col items-center justify-center overflow-hidden pointer-events-auto"
         >
           {/* CRT Scanlines Overlay */}
           <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100%_4px] pointer-events-none mix-blend-overlay z-10" />
@@ -143,20 +164,24 @@ export default function RouteTransitionLoader() {
               dpr={[1, 2]}
               gl={{ alpha: true, antialias: false }}
             >
-              <color attach="background" args={["transparent"]} />
+              <color attach="background" args={["#030014"]} />
               <SpinningCore />
               
               <EffectComposer>
                 <Bloom 
-                  luminanceThreshold={0.2} 
+                  luminanceThreshold={0.1} 
                   luminanceSmoothing={0.9} 
-                  intensity={2.5} 
+                  intensity={4.0} 
+                />
+                <ChromaticAberration
+                  blendFunction={BlendFunction.NORMAL}
+                  offset={new THREE.Vector2(0.005, 0.005)}
                 />
                 <Glitch 
-                  delay={new THREE.Vector2(0.2, 1.0)} 
-                  duration={new THREE.Vector2(0.1, 0.2)} 
-                  strength={new THREE.Vector2(0.01, 0.05)} 
-                  mode={GlitchMode.SPORADIC} 
+                  delay={new THREE.Vector2(0.1, 0.3)} 
+                  duration={new THREE.Vector2(0.1, 0.3)} 
+                  strength={new THREE.Vector2(0.02, 0.1)} 
+                  mode={GlitchMode.CONSTANT_MILD} 
                   active={true}
                   ratio={0.85} 
                 />
