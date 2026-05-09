@@ -6,6 +6,7 @@ import CustomCursor from "@/components/ui/CustomCursor";
 import { SoundProvider } from "@/lib/SoundContext";
 import SoundWidget from "@/components/ui/SoundWidget";
 import TerminalEasterEgg from "@/components/ui/TerminalEasterEgg";
+import RouteTransitionLoader from "@/components/ui/RouteTransitionLoader";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -61,6 +62,7 @@ export default function RootLayout({
           <TerminalEasterEgg />
           <CustomCursor />
           <SoundWidget />
+          <RouteTransitionLoader />
           <SmoothScrolling>{children}</SmoothScrolling>
         </SoundProvider>
       </body>
