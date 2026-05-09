@@ -187,22 +187,28 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
         const textPos = new Float32Array(particleCount * 3);
         const sizesArr = new Float32Array(particleCount);
 
+        const isMobile = window.innerWidth < 768;
+        const textScale = isMobile ? 0.015 : 0.045;
+        const sphereRadius = isMobile ? 0.8 : 1.5;
+        const randomSpread = isMobile ? 20 : 40;
+        const sizeMultiplier = isMobile ? 0.6 : 1.0;
+
         // 1. Generate Random Positions (Nebula)
         for (let i = 0; i < particleCount; i++) {
-            randomPos[i * 3] = (Math.random() - 0.5) * 40; // x
-            randomPos[i * 3 + 1] = (Math.random() - 0.5) * 40; // y
-            randomPos[i * 3 + 2] = (Math.random() - 0.5) * 40; // z
-            sizesArr[i] = Math.random() * 2.0 + 0.5; // Random size
+            randomPos[i * 3] = (Math.random() - 0.5) * randomSpread; // x
+            randomPos[i * 3 + 1] = (Math.random() - 0.5) * randomSpread; // y
+            randomPos[i * 3 + 2] = (Math.random() - 0.5) * randomSpread; // z
+            sizesArr[i] = (Math.random() * 2.0 + 0.5) * sizeMultiplier; // Random size
         }
 
         // 2. Generate Sphere Positions (The Core)
         for (let i = 0; i < particleCount; i++) {
             const phi = Math.acos(-1 + (2 * i) / particleCount);
             const theta = Math.sqrt(particleCount * Math.PI) * phi;
-            // Radius of 1.5
-            spherePos[i * 3] = 1.5 * Math.cos(theta) * Math.sin(phi);
-            spherePos[i * 3 + 1] = 1.5 * Math.sin(theta) * Math.sin(phi);
-            spherePos[i * 3 + 2] = 1.5 * Math.cos(phi);
+            
+            spherePos[i * 3] = sphereRadius * Math.cos(theta) * Math.sin(phi);
+            spherePos[i * 3 + 1] = sphereRadius * Math.sin(theta) * Math.sin(phi);
+            spherePos[i * 3 + 2] = sphereRadius * Math.cos(phi);
         }
 
         // 3. Generate Text Positions (<RR />)
@@ -231,7 +237,7 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
                 for (let x = 0; x < w; x += 3) {
                     const index = (y * w + x) * 4;
                     if (imageData[index] > 128) { // If pixel is white
-                        validPixels.push({ x: (x - w / 2) * 0.05, y: -(y - h / 2) * 0.05 });
+                        validPixels.push({ x: (x - w / 2) * textScale, y: -(y - h / 2) * textScale });
                     }
                 }
             }
@@ -240,9 +246,9 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
             for (let i = 0; i < particleCount; i++) {
                 if (validPixels.length > 0) {
                     const pixel = validPixels[i % validPixels.length];
-                    textPos[i * 3] = pixel.x + (Math.random() - 0.5) * 0.15;
-                    textPos[i * 3 + 1] = pixel.y + (Math.random() - 0.5) * 0.15;
-                    textPos[i * 3 + 2] = (Math.random() - 0.5) * 0.3; // Give text some 3D depth
+                    textPos[i * 3] = pixel.x + (Math.random() - 0.5) * (textScale * 3.0);
+                    textPos[i * 3 + 1] = pixel.y + (Math.random() - 0.5) * (textScale * 3.0);
+                    textPos[i * 3 + 2] = (Math.random() - 0.5) * (textScale * 6.0); // Give text some 3D depth
                 } else {
                     textPos[i * 3] = spherePos[i * 3];
                     textPos[i * 3 + 1] = spherePos[i * 3 + 1];
