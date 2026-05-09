@@ -64,11 +64,23 @@ function SpinningCore() {
   );
 }
 
+// Module-level trigger so any component can fire the loader instantly
+let _triggerTransition: (() => void) | null = null;
+export function triggerRouteTransition() {
+  _triggerTransition?.();
+}
+
 export default function RouteTransitionLoader() {
   const pathname = usePathname();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const isInitialMount = useRef(true);
   const lastPathname = useRef(pathname);
+
+  // Register the module-level trigger
+  useEffect(() => {
+    _triggerTransition = () => setIsTransitioning(true);
+    return () => { _triggerTransition = null; };
+  }, []);
 
   // Trigger instantly on link click to mask Next.js routing delay
   useEffect(() => {

@@ -9,6 +9,7 @@ import { FaGithub } from "react-icons/fa";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { projects, type Project } from "@/lib/data";
 import TiltCard from "@/components/ui/TiltCard";
+import { triggerRouteTransition } from "@/components/ui/RouteTransitionLoader";
 
 const filters = ["All", "Featured", "Web", "Full Stack"] as const;
 
@@ -69,7 +70,10 @@ export default function Projects() {
             >
               <TiltCard
                 className="glass rounded-xl h-full cursor-pointer magnetic"
-                onClick={() => router.push(`/projects/${project.id}`)}
+              onClick={() => {
+                triggerRouteTransition();
+                router.push(`/projects/${project.id}`);
+              }}
               >
                 {/* Image / Gradient Area */}
               <div className="relative h-44 sm:h-48 overflow-hidden bg-white/5 border-b border-white/5">

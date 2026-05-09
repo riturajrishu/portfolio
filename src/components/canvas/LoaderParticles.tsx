@@ -188,10 +188,11 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
         const sizesArr = new Float32Array(particleCount);
 
         const isMobile = window.innerWidth < 768;
-        const textScale = isMobile ? 0.015 : 0.045;
+        const textScale = isMobile ? 0.011 : 0.045;
         const sphereRadius = isMobile ? 0.8 : 1.5;
         const randomSpread = isMobile ? 20 : 40;
         const sizeMultiplier = isMobile ? 0.6 : 1.0;
+        const fontSize = isMobile ? 80 : 120;
 
         // 1. Generate Random Positions (Nebula)
         for (let i = 0; i < particleCount; i++) {
@@ -224,11 +225,12 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
             ctx.fillRect(0, 0, w, h);
             ctx.fillStyle = "white";
             // Use system fonts for reliability
-            ctx.font = "bold 120px system-ui, -apple-system, sans-serif";
+            ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText("RITU RAJ", w / 2, h / 2 - 60);
-            ctx.fillText("  RISHU", w / 2, h / 2 + 60);
+            const lineGap = isMobile ? 45 : 60;
+            ctx.fillText("RITU RAJ", w / 2, h / 2 - lineGap);
+            ctx.fillText("  RISHU", w / 2, h / 2 + lineGap);
 
             const imageData = ctx.getImageData(0, 0, w, h).data;
             const validPixels = [];
