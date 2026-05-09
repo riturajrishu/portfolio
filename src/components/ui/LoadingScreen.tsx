@@ -1,79 +1,71 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { Canvas } from "@react-three/fiber";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import { AnimatePresence, motion } from "framer-motion";
+import gsap from "gsap";
+import LoaderParticles from "../canvas/LoaderParticles";
 
 export default function LoadingScreen() {
   const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => setLoading(false), 400);
-          return 100;
-        }
-        return prev + Math.random() * 15 + 5;
-      });
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
+  const handleComplete = () => {
+    // Fade out the entire loading screen after the flythrough
+    setTimeout(() => setLoading(false), 200);
+  };
 
   return (
     <AnimatePresence>
       {loading && (
         <motion.div
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#030014]"
+          transition={{ duration: 1.2, ease: "easeInOut" }}
+          className="fixed inset-0 z-[100] bg-[#030014] overflow-hidden"
         >
-          {/* Background gradient orbs */}
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-600/20 rounded-full blur-[100px] animate-float" />
-            <div className="absolute bottom-1/3 right-1/4 w-48 h-48 bg-blue-600/20 rounded-full blur-[80px] animate-float-delayed" />
+          {/* Noise overlay for cinematic feel */}
+          <div className="absolute inset-0 noise-bg opacity-40 z-10 pointer-events-none" />
+
+          {/* Minimalist loading text at bottom */}
+          <div className="absolute bottom-12 left-0 w-full flex flex-col items-center justify-center z-20 pointer-events-none">
+             <motion.p 
+               initial={{ opacity: 0, y: 10 }}
+               animate={{ opacity: 1, y: 0 }}
+               transition={{ duration: 1, delay: 0.5 }}
+               className="text-text-muted text-xs tracking-[0.3em] uppercase font-mono mb-2"
+             >
+                Initializing Quantum Core
+             </motion.p>
+             <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 6.5, ease: "linear", delay: 0.5 }}
+                className="h-[1px] max-w-[200px] bg-gradient-to-r from-transparent via-purple-500 to-transparent"
+             />
           </div>
 
-          {/* Logo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="relative z-10 mb-8"
+          {/* R3F Canvas */}
+          <Canvas
+            camera={{ position: [0, 0, 15], fov: 45 }}
+            dpr={[1, 2]} // Optimize for mobile vs retina
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 5 }}
           >
-            <h1 className="text-5xl sm:text-6xl font-bold gradient-text tracking-tight">
-              {"<RR />"}
-            </h1>
-          </motion.div>
+            <color attach="background" args={["#030014"]} />
+            
+            {/* The Custom Particle System */}
+            <LoaderParticles onComplete={handleComplete} />
 
-          {/* Name */}
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="relative z-10 text-text-secondary text-sm sm:text-base tracking-widest uppercase mb-12"
-          >
-            Ritu Raj
-          </motion.p>
-
-          {/* Progress bar */}
-          <div className="relative z-10 w-48 sm:w-64">
-            <div className="h-[2px] w-full bg-white/10 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{
-                  background: "linear-gradient(90deg, #7c3aed, #3b82f6, #06b6d4)",
-                  width: `${Math.min(progress, 100)}%`,
-                }}
-                transition={{ duration: 0.1 }}
+            {/* Cinematic Post-Processing */}
+            <EffectComposer>
+              <Bloom 
+                luminanceThreshold={0.2} 
+                luminanceSmoothing={0.9} 
+                intensity={2.0} 
+                mipmapBlur 
               />
-            </div>
-            <p className="text-center text-text-muted text-xs mt-3 font-mono">
-              {Math.min(Math.round(progress), 100)}%
-            </p>
-          </div>
+            </EffectComposer>
+          </Canvas>
+
         </motion.div>
       )}
     </AnimatePresence>
