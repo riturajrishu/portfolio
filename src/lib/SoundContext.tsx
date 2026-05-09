@@ -82,8 +82,8 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
       if (audioCtxRef.current?.state === "suspended") {
         audioCtxRef.current.resume();
       }
-      // Smooth fade in
-      ambientGainRef.current?.gain.setTargetAtTime(0.04, audioCtxRef.current!.currentTime, 2);
+      // Smooth fade in - Increased volume from 0.04 to 0.15
+      ambientGainRef.current?.gain.setTargetAtTime(0.15, audioCtxRef.current!.currentTime, 2);
     } else {
       // Smooth fade out
       if (ambientGainRef.current && audioCtxRef.current) {
@@ -108,18 +108,18 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     
-    // Premium UI mechanical tick
+    // Premium UI mechanical tick - Increased volume
     osc.type = "sine";
     osc.frequency.setValueAtTime(1000, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 0.03);
+    osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 0.05);
     
-    gain.gain.setValueAtTime(0.02, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.03);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
     
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start();
-    osc.stop(ctx.currentTime + 0.03);
+    osc.stop(ctx.currentTime + 0.05);
   };
 
   const playClick = () => {
@@ -129,12 +129,12 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     
-    // Premium UI satisfying Pop/Drop
+    // Premium UI satisfying Pop/Drop - Increased volume
     osc.type = "sine";
     osc.frequency.setValueAtTime(400, ctx.currentTime);
     osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.1);
     
-    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
     
     osc.connect(gain);
