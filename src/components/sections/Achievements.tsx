@@ -31,7 +31,7 @@ export default function Achievements() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
+                transition={{ duration: 0.5, delay: i * 0.06 }}
                 whileHover={{ y: -5, transition: { duration: 0.2 } }}
                 className="glass rounded-xl p-5 sm:p-6 hover:bg-surface-hover transition-all duration-300 group relative overflow-hidden"
                 onMouseEnter={(e) => {
