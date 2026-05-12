@@ -9,6 +9,9 @@ const vertexShader = `
 uniform float uTime;
 uniform float uProgress;
 uniform float uFlythrough;
+uniform float uLightningFlash;
+uniform float uNeonIntensity;
+uniform float uSparkle;
 
 attribute vec3 aRandomPosition;
 attribute vec3 aSpherePosition;
@@ -16,6 +19,7 @@ attribute vec3 aTextPosition;
 attribute float aSize;
 
 varying vec3 vColor;
+varying float vSparkle;
 
 // Classic 3D noise for organic movement
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -101,6 +105,24 @@ void main() {
         targetPos = aTextPosition;
     }
 
+    // ── Lightning jolt effect ──
+    // When lightning flashes, particles near random strike points get jolted
+    if (uLightningFlash > 0.0) {
+        // Create electric disturbance — particles jump along their normals
+        float strikeNoise = snoise(targetPos * 3.0 + uTime * 10.0);
+        float strikeInfluence = smoothstep(0.3, 1.0, strikeNoise) * uLightningFlash;
+        
+        // Radial electric arc — particles streak outward briefly (tamed to keep text readable)
+        vec3 joltDir = normalize(targetPos + vec3(0.001));
+        float joltScale = uProgress > 1.5 ? 0.15 : 0.5; // Much less jolt during text phase
+        targetPos += joltDir * strikeInfluence * joltScale;
+        
+        // High-frequency vibration for electric feel
+        float vibScale = uProgress > 1.5 ? 0.04 : 0.12;
+        targetPos.x += sin(uTime * 50.0 + targetPos.y * 10.0) * uLightningFlash * vibScale;
+        targetPos.y += cos(uTime * 50.0 + targetPos.x * 10.0) * uLightningFlash * vibScale;
+    }
+
     // Flythrough explosion effect
     if (uFlythrough > 0.0) {
         // Explode outward along Z and slightly XY
@@ -125,6 +147,23 @@ void main() {
         gl_PointSize *= (1.0 + uFlythrough * 5.0); 
     }
 
+    // ── Sparkle twinkle — random particles flicker bigger ──
+    float sparkleHash = fract(sin(dot(targetPos.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    vSparkle = 0.0;
+    if (uSparkle > 0.0) {
+        // Only ~15% of particles sparkle at any given frame
+        float sparklePhase = sin(uTime * 15.0 + sparkleHash * 6.283) * 0.5 + 0.5;
+        float sparkleGate = step(0.85, sparkleHash * sparklePhase);
+        vSparkle = sparkleGate * uSparkle;
+        gl_PointSize *= (1.0 + vSparkle * 3.0);
+    }
+
+    // ── Lightning makes some particles flare up ──
+    if (uLightningFlash > 0.0) {
+        float flashInfluence = smoothstep(0.2, 0.8, snoise(targetPos * 4.0 + uTime * 8.0));
+        gl_PointSize *= (1.0 + flashInfluence * uLightningFlash * 2.5);
+    }
+
     // Colors: Electric Blue and Neon Purple based on position
     vec3 color1 = vec3(0.48, 0.22, 0.92); // Purple (#7c3aed)
     vec3 color2 = vec3(0.02, 0.71, 0.83); // Cyan (#06b6d4)
@@ -133,17 +172,39 @@ void main() {
     float colorMix = sin(targetPos.x + targetPos.y + uTime) * 0.5 + 0.5;
     vColor = mix(mix(color1, color2, colorMix), color3, snoise(targetPos * 2.0) * 0.5 + 0.5);
     
-    // Whiten up the core when forming the sphere
+    // Whiten up the core when forming the sphere — more intense electric white
     if (uProgress > 0.7 && uProgress < 1.3) {
-        float glow = sin((uProgress - 0.7) * 3.14159 / 0.6); // 0 to 1 back to 0
-        vColor = mix(vColor, vec3(1.0, 1.0, 1.0), glow * 0.9);
+        float glow = sin((uProgress - 0.7) * 3.14159 / 0.6);
+        vColor = mix(vColor, vec3(0.8, 0.85, 1.0), glow * 0.95);
+    }
+
+    // ── Lightning flash — particles go electric white-blue ──
+    if (uLightningFlash > 0.0) {
+        vec3 lightningColor = vec3(0.7, 0.8, 1.0); // Electric white-blue
+        float flashMix = uLightningFlash * smoothstep(0.0, 0.5, snoise(targetPos * 6.0 + uTime * 12.0) * 0.5 + 0.5);
+        vColor = mix(vColor, lightningColor, flashMix);
+    }
+
+    // ── Neon intensity — cranks up color saturation and brightness during text phase ──
+    if (uNeonIntensity > 0.0) {
+        // Boost toward vivid neon purple/cyan
+        vec3 neonPurple = vec3(0.65, 0.15, 1.0);
+        vec3 neonCyan = vec3(0.0, 1.0, 0.9);
+        float neonMix = sin(targetPos.x * 3.0 + uTime * 2.0) * 0.5 + 0.5;
+        vec3 neonColor = mix(neonPurple, neonCyan, neonMix);
+        vColor = mix(vColor, neonColor, uNeonIntensity * 0.6);
+        // Add white-hot core to some particles
+        vColor += vec3(1.0) * uNeonIntensity * 0.15;
     }
 }
 `;
 
 const fragmentShader = `
 varying vec3 vColor;
+varying float vSparkle;
 uniform float uFlythrough;
+uniform float uLightningFlash;
+uniform float uNeonIntensity;
 
 void main() {
     // Make circular particles
@@ -153,12 +214,35 @@ void main() {
     // Soft edges
     float alpha = 1.0 - (dist * 2.0);
     
+    // ── Sparkle particles get a sharp star-like center ──
+    if (vSparkle > 0.0) {
+        // Create a 4-pointed star pattern
+        vec2 uv = gl_PointCoord - 0.5;
+        float star = max(
+            1.0 - abs(uv.x) * 8.0 - abs(uv.y) * 2.0,
+            1.0 - abs(uv.x) * 2.0 - abs(uv.y) * 8.0
+        );
+        star = max(star, 0.0);
+        alpha = max(alpha, star * vSparkle);
+    }
+
+    // ── Lightning flash — boost overall brightness ──
+    if (uLightningFlash > 0.0) {
+        alpha = min(alpha + uLightningFlash * 0.3, 1.0);
+    }
+
+    // ── Neon glow — tighter, brighter core ──
+    if (uNeonIntensity > 0.0) {
+        float neonCore = smoothstep(0.5, 0.0, dist) * uNeonIntensity;
+        alpha = min(alpha + neonCore * 0.4, 1.0);
+    }
+
     // Fade out slightly during flythrough to prevent blinding the user completely
     if (uFlythrough > 0.5) {
         alpha *= 1.0 - ((uFlythrough - 0.5) * 2.0);
     }
 
-    gl_FragColor = vec4(vColor, alpha * 0.8);
+    gl_FragColor = vec4(vColor, alpha * 0.85);
 }
 `;
 
@@ -283,26 +367,115 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
         // Reset timeline and uniforms when component mounts
         materialRef.current.uniforms.uProgress.value = 0;
         materialRef.current.uniforms.uFlythrough.value = 0;
+        materialRef.current.uniforms.uLightningFlash.value = 0;
+        materialRef.current.uniforms.uNeonIntensity.value = 0;
+        materialRef.current.uniforms.uSparkle.value = 0;
 
+        const mat = materialRef.current;
         const tl = gsap.timeline({ onComplete });
 
-        // Cinematic 6-second Timeline
-        tl
-            .to(materialRef.current.uniforms.uProgress, {
-                value: 1.0, // To Sphere (The Core)
-                duration: 2.5,
-                ease: "power2.inOut"
-            }, "0.5")
-            .to(materialRef.current.uniforms.uProgress, {
-                value: 2.0, // To Text (The Assembly)
-                duration: 1.8,
-                ease: "elastic.out(1, 0.7)"
-            }, "+=0.3") // Hold core for 0.3s
-            .to(materialRef.current.uniforms.uFlythrough, {
-                value: 1.0, // Flythrough explode
-                duration: 1.5,
-                ease: "power3.in"
-            }, "+=1.5"); // Hold text for 1.5s
+        // ══════════════════════════════════════════════════
+        // PHASE 1 (0–2.5s): Electric Nebula Storm
+        // Particles swirl inward to sphere with lightning strikes
+        // ══════════════════════════════════════════════════
+        tl.to(mat.uniforms.uProgress, {
+            value: 1.0,
+            duration: 2.5,
+            ease: "power2.inOut"
+        }, "0.3");
+
+        // Lightning strike pulses during nebula phase
+        // Strike 1
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 1.0, duration: 0.08, ease: "power4.in"
+        }, "0.8");
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 0.0, duration: 0.25, ease: "power2.out"
+        }, "0.88");
+        // Strike 2
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 0.8, duration: 0.06, ease: "power4.in"
+        }, "1.5");
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 0.0, duration: 0.2, ease: "power2.out"
+        }, "1.56");
+        // Strike 3 — big one right as sphere forms
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 1.0, duration: 0.05, ease: "power4.in"
+        }, "2.4");
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 0.0, duration: 0.35, ease: "power2.out"
+        }, "2.45");
+
+        // ══════════════════════════════════════════════════
+        // PHASE 2 (2.8–4.6s): Thunder Core → Text Morph
+        // Sphere morphs to text with elastic snap
+        // ══════════════════════════════════════════════════
+        tl.to(mat.uniforms.uProgress, {
+            value: 2.0,
+            duration: 1.8,
+            ease: "elastic.out(1, 0.7)"
+        }, "3.0");
+
+        // Lightning during core phase
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 0.6, duration: 0.06, ease: "power4.in"
+        }, "3.2");
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 0.0, duration: 0.3, ease: "power2.out"
+        }, "3.26");
+
+        // ══════════════════════════════════════════════════
+        // PHASE 3 (4.6–6.5s): Neon Text Reveal + Sparkles
+        // Text glows with intense neon, sparkles scatter
+        // ══════════════════════════════════════════════════
+        tl.to(mat.uniforms.uNeonIntensity, {
+            value: 1.0,
+            duration: 0.8,
+            ease: "power2.in"
+        }, "4.6");
+
+        tl.to(mat.uniforms.uSparkle, {
+            value: 1.0,
+            duration: 0.6,
+            ease: "power1.in"
+        }, "4.8");
+
+        // Small electric flicker on the neon text
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 0.3, duration: 0.04, ease: "none"
+        }, "5.2");
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 0.0, duration: 0.15, ease: "power1.out"
+        }, "5.24");
+
+        // ══════════════════════════════════════════════════
+        // PHASE 4 (6.5–7.5s): Thunderclap Departure
+        // Final flash + flythrough explosion
+        // ══════════════════════════════════════════════════
+
+        // Final thunder flash
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 1.0, duration: 0.06, ease: "power4.in"
+        }, "6.3");
+        tl.to(mat.uniforms.uLightningFlash, {
+            value: 0.0, duration: 0.5, ease: "power2.out"
+        }, "6.36");
+
+        // Fade out sparkle and neon
+        tl.to(mat.uniforms.uSparkle, {
+            value: 0.0, duration: 0.4, ease: "power1.out"
+        }, "6.4");
+        tl.to(mat.uniforms.uNeonIntensity, {
+            value: 0.0, duration: 0.5, ease: "power1.out"
+        }, "6.4");
+
+        // Flythrough explosion
+        tl.to(mat.uniforms.uFlythrough, {
+            value: 1.0,
+            duration: 1.2,
+            ease: "power3.in"
+        }, "6.5");
 
         return () => {
             tl.kill();
@@ -342,7 +515,10 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
                 uniforms={{
                     uTime: { value: 0 },
                     uProgress: { value: 0 },
-                    uFlythrough: { value: 0 }
+                    uFlythrough: { value: 0 },
+                    uLightningFlash: { value: 0 },
+                    uNeonIntensity: { value: 0 },
+                    uSparkle: { value: 0 }
                 }}
                 transparent={true}
                 depthWrite={false}
