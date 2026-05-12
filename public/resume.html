@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ritu Raj — Resume</title>
+  <style>
+    /* ── Reset & Base ── */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @page {
+      size: A4;
+      margin: 0;
+    }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 10.5pt;
+      line-height: 1.35;
+      color: #000;
+      background: #e8e8e8;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .page {
+      width: 8.5in;
+      min-height: 11in;
+      max-height: 11in;
+      margin: 20px auto;
+      padding: 0.5in 0.6in 0.5in 0.6in;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+
+      .page {
+        margin: 0;
+        box-shadow: none;
+        padding: 0.45in 0.55in 0.4in 0.55in;
+      }
+
+      .download-btn {
+        display: none !important;
+      }
+    }
+
+    .download-btn {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #222;
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-family: Arial, sans-serif;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+      transition: background 0.2s, transform 0.2s;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .download-btn:hover {
+      background: #444;
+      transform: translateY(-2px);
+    }
+
+    .download-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 6pt;
+    }
+
+    .header h1 {
+      font-size: 20pt;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 3pt;
+    }
+
+    .header .contact-line {
+      font-size: 9.5pt;
+      color: #222;
+    }
+
+    .header .contact-line a {
+      color: #222;
+      text-decoration: none;
+    }
+
+    .header .contact-line a:hover {
+      text-decoration: underline;
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 6pt;
+    }
+
+    .section-title {
+      font-size: 10.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      border-bottom: 1.5px solid #000;
+      padding-bottom: 1pt;
+      margin-bottom: 4pt;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Entry rows ── */
+    .entry {
+      margin-bottom: 4pt;
+    }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .entry-title {
+      font-weight: bold;
+      font-size: 10.5pt;
+    }
+
+    .entry-location {
+      font-style: italic;
+      font-size: 10pt;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .entry-sub {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .entry-subtitle {
+      font-style: italic;
+      font-size: 10pt;
+    }
+
+    .entry-date {
+      font-style: italic;
+      font-size: 10pt;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .entry-detail {
+      font-size: 10pt;
+      margin-top: 1pt;
+    }
+
+    /* ── Bullet lists ── */
+    .bullets {
+      list-style-type: disc;
+      margin-left: 18pt;
+      margin-top: 2pt;
+    }
+
+    .bullets li {
+      font-size: 10pt;
+      margin-bottom: 1.5pt;
+      line-height: 1.3;
+    }
+
+    /* ── Additional / Skills section ── */
+    .skills-line {
+      font-size: 10pt;
+      margin-bottom: 2pt;
+      line-height: 1.35;
+    }
+
+    .skills-line strong {
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+
+    <!-- ═══════════════ HEADER ═══════════════ -->
+    <div class="header">
+      <h1>Ritu Raj</h1>
+      <div class="contact-line">
+        Bhubaneswar, Odisha &nbsp;|&nbsp;
+        <a href="mailto:itsriturajrishu@gmail.com">itsriturajrishu@gmail.com</a> &nbsp;|&nbsp;
+        <a href="https://www.linkedin.com/in/riturajrishu/">linkedin.com/in/riturajrishu</a> &nbsp;|&nbsp;
+        <a href="https://github.com/riturajrishu">github.com/riturajrishu</a> &nbsp;|&nbsp;
+        <a href="tel:+91-6299313040">+91-6299313040</a>
+      </div>
+    </div>
+
+    <!-- ═══════════════ EDUCATION ═══════════════ -->
+    <div class="section">
+      <div class="section-title">Education</div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Gandhi Institute for Education &amp; Technology</span>
+          <span class="entry-location">Baniatangi, Odisha</span>
+        </div>
+        <div class="entry-sub">
+          <span class="entry-subtitle">Bachelor of Technology in Computer Science and Engineering</span>
+          <span class="entry-date">2022 – Present</span>
+        </div>
+        <div class="entry-detail">
+          Relevant Coursework: Data Structures &amp; Algorithms; Operating Systems; Database Management Systems;
+          Computer Networks;
+        </div>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">A.B.S Inter College</span>
+          <span class="entry-location">Lalganj, Vaishali</span>
+        </div>
+        <div class="entry-sub">
+          <span class="entry-subtitle">Intermediate (+2) — Science (Mathematics)</span>
+          <span class="entry-date">2020 – 2022</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════ WORK EXPERIENCE ═══════════════ -->
+    <div class="section">
+      <div class="section-title">Work Experience</div>
+
+
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Bihar Skill Development Mission (BSDM)</span>
+          <span class="entry-location">Patna, Bihar</span>
+        </div>
+        <div class="entry-sub">
+          <span class="entry-subtitle">Certified KYP Learning Facilitator</span>
+          <span class="entry-date">2025 – Present</span>
+        </div>
+        <ul class="bullets">
+          <li>Cleared OnCET Process &amp; Proficiency Tests to become a certified Learning Facilitator for the Kushal
+            Yuva Program</li>
+          <li>Facilitate digital literacy and technical skill-building sessions for program participants</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════════ PROJECTS ═══════════════ -->
+    <div class="section">
+      <div class="section-title">Projects</div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">KeeperX Enterprise — Password Manager</span>
+          <span class="entry-date">2025</span>
+        </div>
+        <div class="entry-detail" style="font-style:italic; font-size:10pt;">React, Node.js, Express, MongoDB, WebAuthn
+          &nbsp;|&nbsp; <a href="https://keeperx-vault.onrender.com/" style="color:#000;">Live Demo</a></div>
+        <ul class="bullets">
+          <li>Architected a zero-knowledge password manager with AES-256-GCM client-side encryption and Argon2 key
+            derivation</li>
+          <li>Implemented passwordless authentication using WebAuthn/FIDO2 passkeys and biometric login support</li>
+          <li>Built a Dark Web Breach Scanner, Vault Hygiene Audit, TOTP generator, and Shamir Secret Sharing recovery
+            system</li>
+          <li>Developed a cross-platform browser extension for seamless credential autofill</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">NeuralDocs — AI RAG Platform</span>
+          <span class="entry-date">2026</span>
+        </div>
+        <div class="entry-detail" style="font-style:italic; font-size:10pt;">Next.js, Node.js, MongoDB, Gemini AI,
+          LangChain &nbsp;|&nbsp; <a href="https://salesamore.onrender.com" style="color:#000;">Live Demo</a></div>
+        <ul class="bullets">
+          <li>Built a production-grade Retrieval-Augmented Generation platform for natural language document Q&amp;A
+          </li>
+          <li>Integrated vector embedding-based semantic search for accurate context retrieval across multi-format
+            documents</li>
+          <li>Implemented real-time streaming responses with Gemini AI for low-latency conversational interactions</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Real-Time Chat Application</span>
+          <span class="entry-date">2025</span>
+        </div>
+        <div class="entry-detail" style="font-style:italic; font-size:10pt;">React, Socket.io, WebRTC, Node.js,
+          Firebase, Zustand &nbsp;|&nbsp; <a href="https://chatterx.onrender.com/" style="color:#000;">Live Demo</a>
+        </div>
+        <ul class="bullets">
+          <li>Developed a WhatsApp-style real-time communication platform with Socket.io for instant messaging and file
+            sharing</li>
+          <li>Implemented peer-to-peer video/audio calling using WebRTC and push notifications via Firebase Cloud
+            Messaging</li>
+          <li>Designed message delivery status tracking (double ticks) and efficient state management with Zustand</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- ═══════════════ ACHIEVEMENTS ═══════════════ -->
+    <div class="section">
+      <div class="section-title">Achievements &amp; Activities</div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Tech Mind — 3x Champion (1st Position)</span>
+          <span class="entry-date">2024, 2025, 2026</span>
+        </div>
+        <ul class="bullets">
+          <li>Secured 1st place in the Tech Mind technical event for three consecutive years at GIET's Annual
+            Techno-Cultural Festival, setting an unprecedented hat-trick record</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Smart India Hackathon 2024</span>
+          <span class="entry-date">2024</span>
+        </div>
+        <ul class="bullets">
+          <li>Secured 4th position among all participating teams at college level; earned Certificate of Merit for
+            innovative problem-solving</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">District Topper — KYP Examination</span>
+          <span class="entry-date">2022</span>
+        </div>
+        <ul class="bullets">
+          <li>Achieved the highest rank in the district for the Kushal Yuva Program examination; qualified for
+            state-level KYP Wizard Competition</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ═══════════════ ADDITIONAL / SKILLS ═══════════════ -->
+    <div class="section">
+      <div class="section-title">Technical Skills</div>
+      <div class="skills-line"><strong>Languages:</strong> JavaScript, TypeScript, Python, C, SQL, HTML/CSS</div>
+      <div class="skills-line"><strong>Frontend:</strong> React, Next.js, Tailwind CSS, Three.js, Framer Motion, Zustand
+      </div>
+      <div class="skills-line"><strong>Backend:</strong> Node.js, Express.js, Socket.io, WebRTC, REST APIs</div>
+      <div class="skills-line"><strong>Databases:</strong> MongoDB, MySQL, Firebase</div>
+      <div class="skills-line"><strong>Tools &amp; Platforms:</strong> Git/GitHub, Docker, Linux, Vercel, Render,
+        Cloudinary</div>
+      <div class="skills-line"><strong>Certifications:</strong> Generative AI Mastermind (Outskill); Deloitte Cyber
+        Security Job Simulation; AI Workshop (Optimal Agents AI)</div>
+    </div>
+
+  </div>
+
+  <button class="download-btn" onclick="window.print()" title="Download as PDF">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zm7-18L5.33 9h3.67v4h4V9h3.67L12 2z" transform="rotate(180 12 12)"/></svg>
+    Download PDF
+  </button>
+
+</body>
+
+</html>

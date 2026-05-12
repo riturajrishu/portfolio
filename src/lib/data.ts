@@ -224,7 +224,7 @@ export const projects: Project[] = [
       "A production-grade Retrieval-Augmented Generation platform that lets users upload documents and interact with them through natural language. Features vector-based semantic search, real-time chat with document context, and multi-format support.",
     image: "https://res.cloudinary.com/dl89ty6uu/image/upload/v1777661245/Screenshot_442_hyjbcs.png",
     techStack: ["Next.js", "Node.js", "MongoDB", "Gemini AI", "LangChain"],
-    liveUrl: "#",
+    liveUrl: "https://salesamore.onrender.com",
     githubUrl: "https://github.com/rituraj",
     category: "fullstack",
     featured: true,
