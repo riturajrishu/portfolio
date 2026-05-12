@@ -76,12 +76,12 @@ export default function Navbar() {
           </motion.a>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-0 lg:gap-1">
             {navLinks.map((link) => (
               <button
                 key={link.href}
                 onClick={() => handleNavClick(link.href)}
-                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                className={`relative px-2 lg:px-4 py-2 text-xs lg:text-sm font-medium rounded-lg transition-colors duration-200 whitespace-nowrap ${
                   activeSection === link.href
                     ? "text-white"
                     : "text-text-secondary hover:text-white"
@@ -104,7 +104,7 @@ export default function Navbar() {
             <Magnetic intensity={0.15}>
               <button
                 onClick={() => handleNavClick("#contact")}
-                className="btn-gradient text-sm !px-6 !py-2.5 !rounded-lg"
+                className="btn-gradient text-xs lg:text-sm !px-4 lg:!px-6 !py-2 lg:!py-2.5 !rounded-lg"
               >
                 <span>Hire Me</span>
               </button>

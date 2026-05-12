@@ -271,12 +271,26 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
         const textPos = new Float32Array(particleCount * 3);
         const sizesArr = new Float32Array(particleCount);
 
-        const isMobile = window.innerWidth < 768;
-        const textScale = isMobile ? 0.011 : 0.045;
-        const sphereRadius = isMobile ? 0.8 : 1.5;
-        const randomSpread = isMobile ? 20 : 40;
-        const sizeMultiplier = isMobile ? 0.6 : 1.0;
-        const fontSize = isMobile ? 80 : 120;
+        const w_ = window.innerWidth;
+        const h_ = window.innerHeight;
+        const isMobile = w_ < 768;
+
+        // Camera is at z=15, FOV=45°. The visible 3D width depends on aspect ratio.
+        // visibleHalfWidth = tan(22.5°) * 15 * aspect = 6.21 * (w_/h_)
+        // On a 16:9 desktop (aspect 1.78) → visible width ≈ 22.1 units  → textScale 0.045 fits
+        // On portrait iPad  (aspect 0.75) → visible width ≈  9.3 units  → need textScale ≈ 0.016
+        // Scale linearly between these anchors for any device.
+        const aspect = w_ / h_;
+        const aspectFactor = isMobile ? 0 : Math.min(Math.max((aspect - 0.7) / (1.78 - 0.7), 0), 1);
+        // aspectFactor: 0 at portrait-tablet, 1 at widescreen desktop
+
+        const textScale   = isMobile ? 0.011 : 0.016 + aspectFactor * 0.029;   // 0.016 → 0.045
+        const sphereRadius = isMobile ? 0.8  : 0.9  + aspectFactor * 0.6;      // 0.9   → 1.5
+        const randomSpread = isMobile ? 20   : 25   + aspectFactor * 15;        // 25    → 40
+        const sizeMultiplier = isMobile ? 0.6 : 0.7 + aspectFactor * 0.3;      // 0.7   → 1.0
+        const fontSize     = isMobile ? 80   : Math.round(85 + aspectFactor * 35); // 85 → 120
+
+
 
         // 1. Generate Random Positions (Nebula)
         for (let i = 0; i < particleCount; i++) {
@@ -312,7 +326,7 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
             ctx.font = `bold ${fontSize}px system-ui, -apple-system, sans-serif`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            const lineGap = isMobile ? 45 : 60;
+            const lineGap = isMobile ? 45 : Math.round(48 + aspectFactor * 12); // 48 → 60
             ctx.fillText("RITU RAJ", w / 2, h / 2 - lineGap);
             ctx.fillText("  RISHU", w / 2, h / 2 + lineGap);
 
