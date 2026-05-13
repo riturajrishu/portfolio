@@ -146,7 +146,9 @@ export default async function ProjectPage({
                 rel="noopener noreferrer"
                 className="btn-gradient flex items-center justify-center gap-2 w-full py-4 text-base"
               >
-                <ExternalLink size={18} /> View Live Demo
+                <span className="flex items-center justify-center gap-2 relative z-10">
+                  <ExternalLink size={18} /> View Live Demo
+                </span>
               </a>
               <a
                 href={project.githubUrl}
@@ -154,7 +156,9 @@ export default async function ProjectPage({
                 rel="noopener noreferrer"
                 className="btn-outline flex items-center justify-center gap-2 w-full py-4 text-base"
               >
-                <FaGithub size={18} /> View Source Code
+                <span className="flex items-center justify-center gap-2">
+                  <FaGithub size={18} /> View Source Code
+                </span>
               </a>
             </div>
           </div>
