@@ -255,6 +255,26 @@ export const projects: Project[] = [
       "Dark/light theme toggle",
     ],
   },
+  {
+    id: "bbchhatoi",
+    title: "B.B. Chhatoi HSS — Educational Portal",
+    description:
+      "A modern, responsive website for B.B. Chhatoi Higher Secondary School featuring campus discovery, online admission guidelines, and an announcements system.",
+    longDescription:
+      "A premium, production-grade educational portal designed and developed for B.B. Chhatoi Higher Secondary School, Nabarangpur. It features full mobile responsiveness, scroll-linked animations, and automated CHSE Odisha +2 stream details. Includes integrated SAMS Odisha guidance and structured campus discovery modules.",
+    image: "/bbchhatoi.png",
+    techStack: ["Next.js", "React", "Tailwind CSS", "Framer Motion", "TypeScript"],
+    liveUrl: "https://bbchhatoihss.vercel.app/",
+    githubUrl: "https://github.com/riturajrishu",
+    category: "web",
+    featured: true,
+    features: [
+      "Scroll-Linked Animations & Transitions",
+      "Dynamic Announcement Events Ticker",
+      "Interactive Campus Explorer Cards",
+      "Integrated SAMS Admission Assistance Guide",
+    ],
+  },
 ];
 
 /* ─────────────── ACHIEVEMENTS ─────────────── */
@@ -442,10 +462,10 @@ export const educationList: Education[] = [
     id: "e3",
     degree: "B.Tech in Computer Science and Engineering",
     institution: "Gandhi Institute for Education & Technology",
-    year: "2022 - Present",
+    year: "2022 - 2026",
     location: "Baniatangi, Odisha",
-    status: "Currently Pursuing",
-    description: "Pursuing B.Tech in CSE with a strong focus on core concepts and practical applications. Gained knowledge in subjects like Data Structures, Algorithms, and DBMS. Actively involved in technical projects, web development, and mastering modern technologies like the MERN stack.",
+    status: "Completed (8.19 CGPA)",
+    description: "Completed B.Tech in CSE with a CGPA of 8.19. Focused on core concepts and practical applications, gaining deep knowledge in subjects like Data Structures, Algorithms, and DBMS. Actively involved in technical projects, web development, and mastering modern technologies like the MERN stack.",
   },
 ];
 
