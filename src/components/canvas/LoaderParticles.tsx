@@ -9,9 +9,13 @@ const vertexShader = `
 uniform float uTime;
 uniform float uProgress;
 uniform float uFlythrough;
-uniform float uLightningFlash;
+uniform float uPulseFlash;
 uniform float uNeonIntensity;
 uniform float uSparkle;
+uniform float uGravity;
+uniform float uShockwave;
+uniform float uPlasmaHeat;
+uniform float uWarpSpeed;
 
 attribute vec3 aRandomPosition;
 attribute vec3 aSpherePosition;
@@ -20,6 +24,8 @@ attribute float aSize;
 
 varying vec3 vColor;
 varying float vSparkle;
+varying float vDistFromCenter;
+varying float vYPos;
 
 // Classic 3D noise for organic movement
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -98,34 +104,90 @@ void main() {
     if (uProgress < 1.0) {
         targetPos = mix(noisyRandom, aSpherePosition, uProgress);
     } else if (uProgress < 2.0) {
-        // Elastic overshoot effect for text morphing
         float p = uProgress - 1.0;
         targetPos = mix(aSpherePosition, aTextPosition, p);
     } else {
         targetPos = aTextPosition;
     }
 
-    // ── Lightning jolt effect ──
-    // When lightning flashes, particles near random strike points get jolted
-    if (uLightningFlash > 0.0) {
-        // Create electric disturbance — particles jump along their normals
-        float strikeNoise = snoise(targetPos * 3.0 + uTime * 10.0);
-        float strikeInfluence = smoothstep(0.3, 1.0, strikeNoise) * uLightningFlash;
+    // ── Spiral Galaxy Vortex (Phase 1) ──
+    // When uGravity > 0, particles spiral inward like a galaxy
+    if (uGravity > 0.0) {
+        vec3 toCenter = -targetPos;
+        float radius = length(targetPos.xz);
+        float angle = atan(targetPos.z, targetPos.x);
         
-        // Radial electric arc — particles streak outward briefly (tamed to keep text readable)
-        vec3 joltDir = normalize(targetPos + vec3(0.001));
-        float joltScale = uProgress > 1.5 ? 0.15 : 0.5; // Much less jolt during text phase
-        targetPos += joltDir * strikeInfluence * joltScale;
+        // Logarithmic spiral arms — particles rotate faster as they get closer
+        float spiralSpeed = uGravity * 3.0;
+        float spiralAngle = angle + spiralSpeed * (1.0 / (radius + 0.5)) + uTime * 0.8;
         
-        // High-frequency vibration for electric feel
-        float vibScale = uProgress > 1.5 ? 0.04 : 0.12;
-        targetPos.x += sin(uTime * 50.0 + targetPos.y * 10.0) * uLightningFlash * vibScale;
-        targetPos.y += cos(uTime * 50.0 + targetPos.x * 10.0) * uLightningFlash * vibScale;
+        // Compress into disk shape (flatten Y)
+        float diskFlatten = uGravity * 0.7;
+        targetPos.y *= (1.0 - diskFlatten);
+        
+        // Rotate in spiral
+        float cosA = cos(spiralAngle - angle);
+        float sinA = sin(spiralAngle - angle);
+        float newX = targetPos.x * cosA - targetPos.z * sinA;
+        float newZ = targetPos.x * sinA + targetPos.z * cosA;
+        targetPos.x = newX;
+        targetPos.z = newZ;
+        
+        // Gravitational pull — accelerate toward center
+        float pullStrength = uGravity * uGravity * 0.3;
+        targetPos.xz += toCenter.xz * pullStrength;
+        
+        // Add orbital turbulence
+        float turbulence = snoise(targetPos * 2.0 + uTime * 1.5) * 0.3 * uGravity;
+        targetPos.x += turbulence;
+        targetPos.z += turbulence * 0.7;
+    }
+
+    // ── Gravitational Wave Pulses ──
+    // Concentric ripple displacement instead of random lightning jolt
+    if (uPulseFlash > 0.0) {
+        float dist = length(targetPos);
+        // Create concentric wave rings emanating from center
+        float wavePhase = dist * 3.0 - uTime * 12.0;
+        float wave = sin(wavePhase) * 0.5 + 0.5;
+        wave = pow(wave, 4.0); // sharpen the rings
+        
+        vec3 radialDir = normalize(targetPos + vec3(0.001));
+        float pulseScale = uProgress > 1.5 ? 0.12 : 0.4;
+        targetPos += radialDir * wave * uPulseFlash * pulseScale;
+        
+        // Subtle vibration for energy feel
+        float vibScale = uProgress > 1.5 ? 0.03 : 0.08;
+        targetPos.x += sin(uTime * 40.0 + targetPos.y * 8.0) * uPulseFlash * vibScale;
+        targetPos.y += cos(uTime * 40.0 + targetPos.x * 8.0) * uPulseFlash * vibScale;
+    }
+
+    // ── Supernova Shockwave ──
+    // Expanding ring that blasts particles outward at the wavefront
+    if (uShockwave > 0.0) {
+        float dist = length(targetPos);
+        float waveFront = uShockwave;
+        float waveWidth = 2.5;
+        
+        // Particles near the wavefront get displaced outward
+        float proximity = 1.0 - smoothstep(0.0, waveWidth, abs(dist - waveFront));
+        vec3 outwardDir = normalize(targetPos + vec3(0.001));
+        targetPos += outwardDir * proximity * 1.8;
+    }
+
+    // ── Warp Speed Star Trails ──
+    // Stretch particles along Z before flythrough
+    if (uWarpSpeed > 0.0) {
+        // Stretch along Z axis — creates star trail effect
+        float stretchFactor = uWarpSpeed * 8.0;
+        targetPos.z += targetPos.z * stretchFactor;
+        // Slight XY compression for tunnel feel
+        targetPos.x *= (1.0 - uWarpSpeed * 0.3);
+        targetPos.y *= (1.0 - uWarpSpeed * 0.3);
     }
 
     // Flythrough explosion effect
     if (uFlythrough > 0.0) {
-        // Explode outward along Z and slightly XY
         float explodeFactor = snoise(targetPos * 5.0) * 2.0 + 1.0;
         targetPos.x += targetPos.x * uFlythrough * explodeFactor * 5.0;
         targetPos.y += targetPos.y * uFlythrough * explodeFactor * 5.0;
@@ -135,6 +197,10 @@ void main() {
     // Add subtle ambient floating
     targetPos.y += sin(uTime + targetPos.x * 2.0) * 0.1;
     targetPos.x += cos(uTime + targetPos.y * 2.0) * 0.1;
+
+    // Store distance and Y for fragment shader (accretion disk + shockwave coloring)
+    vDistFromCenter = length(targetPos);
+    vYPos = targetPos.y;
 
     vec4 mvPosition = modelViewMatrix * vec4(targetPos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
@@ -151,50 +217,135 @@ void main() {
     float sparkleHash = fract(sin(dot(targetPos.xy, vec2(12.9898, 78.233))) * 43758.5453);
     vSparkle = 0.0;
     if (uSparkle > 0.0) {
-        // Only ~15% of particles sparkle at any given frame
         float sparklePhase = sin(uTime * 15.0 + sparkleHash * 6.283) * 0.5 + 0.5;
         float sparkleGate = step(0.85, sparkleHash * sparklePhase);
         vSparkle = sparkleGate * uSparkle;
         gl_PointSize *= (1.0 + vSparkle * 3.0);
     }
 
-    // ── Lightning makes some particles flare up ──
-    if (uLightningFlash > 0.0) {
+    // ── Gravitational pulse makes some particles flare up ──
+    if (uPulseFlash > 0.0) {
         float flashInfluence = smoothstep(0.2, 0.8, snoise(targetPos * 4.0 + uTime * 8.0));
-        gl_PointSize *= (1.0 + flashInfluence * uLightningFlash * 2.5);
+        gl_PointSize *= (1.0 + flashInfluence * uPulseFlash * 2.5);
     }
 
-    // Colors: Electric Blue and Neon Purple based on position
+    // ── Plasma heat — particles swell during supernova ──
+    if (uPlasmaHeat > 0.0) {
+        gl_PointSize *= (1.0 + uPlasmaHeat * 1.5);
+    }
+
+    // ══════ COLOR SYSTEM ══════
+
+    // Base palette: Purple / Cyan / Blue
     vec3 color1 = vec3(0.48, 0.22, 0.92); // Purple (#7c3aed)
     vec3 color2 = vec3(0.02, 0.71, 0.83); // Cyan (#06b6d4)
     vec3 color3 = vec3(0.23, 0.51, 0.96); // Blue (#3b82f6)
 
     float colorMix = sin(targetPos.x + targetPos.y + uTime) * 0.5 + 0.5;
     vColor = mix(mix(color1, color2, colorMix), color3, snoise(targetPos * 2.0) * 0.5 + 0.5);
-    
-    // Whiten up the core when forming the sphere — more intense electric white
+
+    // ── Accretion Disk Glow ──
+    // Particles near the equatorial plane (small |y|) during gravity phase get warm orange tint
+    if (uGravity > 0.3) {
+        float diskGlow = 1.0 - smoothstep(0.0, 1.5, abs(targetPos.y));
+        float diskIntensity = diskGlow * (uGravity - 0.3) / 0.7;
+        vec3 accretionColor = vec3(1.0, 0.6, 0.15); // Warm orange
+        vColor = mix(vColor, accretionColor, diskIntensity * 0.7);
+        // Hot white-blue inner ring
+        float innerRing = 1.0 - smoothstep(0.0, 0.8, length(targetPos.xz));
+        vColor = mix(vColor, vec3(0.8, 0.85, 1.0), innerRing * diskIntensity * 0.5);
+    }
+
+    // ── Singularity core whiten ──
+    // Particles near center during collapse go white-hot
     if (uProgress > 0.7 && uProgress < 1.3) {
         float glow = sin((uProgress - 0.7) * 3.14159 / 0.6);
-        vColor = mix(vColor, vec3(0.8, 0.85, 1.0), glow * 0.95);
+        float centerDist = length(targetPos);
+        float coreBright = glow * (1.0 - smoothstep(0.0, 2.0, centerDist));
+        vColor = mix(vColor, vec3(0.9, 0.9, 1.0), coreBright * 0.9);
     }
 
-    // ── Lightning flash — particles go electric white-blue ──
-    if (uLightningFlash > 0.0) {
-        vec3 lightningColor = vec3(0.7, 0.8, 1.0); // Electric white-blue
-        float flashMix = uLightningFlash * smoothstep(0.0, 0.5, snoise(targetPos * 6.0 + uTime * 12.0) * 0.5 + 0.5);
-        vColor = mix(vColor, lightningColor, flashMix);
+    // ── Plasma Heat — temperature-based coloring ──
+    // White-hot → orange → purple gradient (supernova thermal emission)
+    if (uPlasmaHeat > 0.0) {
+        vec3 whiteHot = vec3(1.0, 1.0, 1.0);
+        vec3 orangeHot = vec3(1.0, 0.55, 0.1);
+        vec3 redHot = vec3(0.9, 0.2, 0.3);
+        
+        float dist = length(targetPos);
+        // Inner particles = hotter (whiter), outer = cooler (orange → red)
+        float tempGradient = smoothstep(0.0, 5.0, dist);
+        vec3 plasmaColor = mix(whiteHot, mix(orangeHot, redHot, tempGradient), tempGradient);
+        
+        vColor = mix(vColor, plasmaColor, uPlasmaHeat * 0.85);
     }
 
-    // ── Neon intensity — cranks up color saturation and brightness during text phase ──
+    // ── Gravitational wave pulse — particles flash white-blue ──
+    if (uPulseFlash > 0.0) {
+        vec3 pulseColor = vec3(0.7, 0.8, 1.0);
+        float flashMix = uPulseFlash * smoothstep(0.0, 0.5, snoise(targetPos * 6.0 + uTime * 12.0) * 0.5 + 0.5);
+        vColor = mix(vColor, pulseColor, flashMix);
+    }
+
+    // ── Neon intensity — cranks up color saturation during text phase ──
     if (uNeonIntensity > 0.0) {
-        // Boost toward vivid neon purple/cyan
         vec3 neonPurple = vec3(0.65, 0.15, 1.0);
         vec3 neonCyan = vec3(0.0, 1.0, 0.9);
         float neonMix = sin(targetPos.x * 3.0 + uTime * 2.0) * 0.5 + 0.5;
         vec3 neonColor = mix(neonPurple, neonCyan, neonMix);
         vColor = mix(vColor, neonColor, uNeonIntensity * 0.6);
-        // Add white-hot core to some particles
         vColor += vec3(1.0) * uNeonIntensity * 0.15;
+    }
+
+    // ── Shockwave ring highlight — chromatic spectrum ring ──
+    // Particles near the wavefront get a vibrant multi-color aurora effect
+    if (uShockwave > 0.0) {
+        float dist = length(targetPos);
+        float waveFront = uShockwave;
+
+        // Primary shockwave ring — tight bright band
+        float rimGlow = 1.0 - smoothstep(0.0, 1.2, abs(dist - waveFront));
+
+        // Secondary inner ring — trailing afterglow (slightly behind the wavefront)
+        float innerRim = 1.0 - smoothstep(0.0, 2.0, abs(dist - waveFront * 0.7));
+
+        // Chromatic color based on angular position — creates rainbow ring effect
+        float angle = atan(targetPos.y, targetPos.x);
+        float chromaPhase = angle * 0.5 + uTime * 3.0; // rotates over time
+
+        // Cycle: purple → cyan → blue → magenta → purple
+        vec3 chromaPurple = vec3(0.65, 0.15, 1.0);
+        vec3 chromaCyan   = vec3(0.0, 1.0, 0.9);
+        vec3 chromaBlue   = vec3(0.23, 0.51, 0.96);
+        vec3 chromaPink   = vec3(1.0, 0.3, 0.7);
+        vec3 chromaOrange  = vec3(1.0, 0.5, 0.1);
+
+        float t = fract(chromaPhase / 6.283);
+        vec3 chromaColor;
+        if (t < 0.25) {
+            chromaColor = mix(chromaPurple, chromaCyan, t / 0.25);
+        } else if (t < 0.5) {
+            chromaColor = mix(chromaCyan, chromaBlue, (t - 0.25) / 0.25);
+        } else if (t < 0.75) {
+            chromaColor = mix(chromaBlue, chromaPink, (t - 0.5) / 0.25);
+        } else {
+            chromaColor = mix(chromaPink, chromaPurple, (t - 0.75) / 0.25);
+        }
+
+        // Leading edge of wavefront = white-hot, then chromatic ring, then warm embers trailing
+        float leadingEdge = smoothstep(0.0, 0.5, dist - waveFront + 0.5);
+        vec3 leadingWhite = vec3(1.0, 0.95, 0.9);
+        vec3 shockColor = mix(leadingWhite, chromaColor, leadingEdge);
+
+        // Apply primary ring
+        vColor = mix(vColor, shockColor, rimGlow * 0.75);
+
+        // Apply trailing inner ring — warm orange/purple embers
+        vec3 emberColor = mix(chromaOrange, chromaPurple, sin(angle * 2.0 + uTime) * 0.5 + 0.5);
+        vColor = mix(vColor, emberColor, innerRim * 0.35);
+
+        // Brightness boost at wavefront — particles near the ring glow brighter
+        vColor += vec3(1.0) * rimGlow * 0.15;
     }
 }
 `;
@@ -202,9 +353,13 @@ void main() {
 const fragmentShader = `
 varying vec3 vColor;
 varying float vSparkle;
+varying float vDistFromCenter;
+varying float vYPos;
 uniform float uFlythrough;
-uniform float uLightningFlash;
+uniform float uPulseFlash;
 uniform float uNeonIntensity;
+uniform float uPlasmaHeat;
+uniform float uGravity;
 
 void main() {
     // Make circular particles
@@ -216,7 +371,6 @@ void main() {
     
     // ── Sparkle particles get a sharp star-like center ──
     if (vSparkle > 0.0) {
-        // Create a 4-pointed star pattern
         vec2 uv = gl_PointCoord - 0.5;
         float star = max(
             1.0 - abs(uv.x) * 8.0 - abs(uv.y) * 2.0,
@@ -226,9 +380,22 @@ void main() {
         alpha = max(alpha, star * vSparkle);
     }
 
-    // ── Lightning flash — boost overall brightness ──
-    if (uLightningFlash > 0.0) {
-        alpha = min(alpha + uLightningFlash * 0.3, 1.0);
+    // ── Gravitational pulse — boost brightness ──
+    if (uPulseFlash > 0.0) {
+        alpha = min(alpha + uPulseFlash * 0.3, 1.0);
+    }
+
+    // ── Plasma heat — blazing bright core during supernova ──
+    if (uPlasmaHeat > 0.0) {
+        float plasmaCore = smoothstep(0.5, 0.0, dist) * uPlasmaHeat;
+        alpha = min(alpha + plasmaCore * 0.5, 1.0);
+    }
+
+    // ── Accretion disk — particles in disk plane glow brighter ──
+    if (uGravity > 0.3) {
+        float diskProximity = 1.0 - smoothstep(0.0, 1.5, abs(vYPos));
+        float diskBoost = diskProximity * (uGravity - 0.3) / 0.7;
+        alpha = min(alpha + diskBoost * 0.2, 1.0);
     }
 
     // ── Neon glow — tighter, brighter core ──
@@ -237,7 +404,7 @@ void main() {
         alpha = min(alpha + neonCore * 0.4, 1.0);
     }
 
-    // Fade out slightly during flythrough to prevent blinding the user completely
+    // Fade out slightly during flythrough
     if (uFlythrough > 0.5) {
         alpha *= 1.0 - ((uFlythrough - 0.5) * 2.0);
     }
@@ -300,7 +467,7 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
             sizesArr[i] = (Math.random() * 2.0 + 0.5) * sizeMultiplier; // Random size
         }
 
-        // 2. Generate Sphere Positions (The Core)
+        // 2. Generate Sphere Positions (The Singularity Core)
         for (let i = 0; i < particleCount; i++) {
             const phi = Math.acos(-1 + (2 * i) / particleCount);
             const theta = Math.sqrt(particleCount * Math.PI) * phi;
@@ -310,7 +477,7 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
             spherePos[i * 3 + 2] = sphereRadius * Math.cos(phi);
         }
 
-        // 3. Generate Text Positions (<RR />)
+        // 3. Generate Text Positions (RITU RAJ / RISHU)
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
         const w = 800;
@@ -378,102 +545,163 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
     useEffect(() => {
         if (!materialRef.current || !isClient) return;
 
-        // Reset timeline and uniforms when component mounts
+        // Reset all uniforms when component mounts
         materialRef.current.uniforms.uProgress.value = 0;
         materialRef.current.uniforms.uFlythrough.value = 0;
-        materialRef.current.uniforms.uLightningFlash.value = 0;
+        materialRef.current.uniforms.uPulseFlash.value = 0;
         materialRef.current.uniforms.uNeonIntensity.value = 0;
         materialRef.current.uniforms.uSparkle.value = 0;
+        materialRef.current.uniforms.uGravity.value = 0;
+        materialRef.current.uniforms.uShockwave.value = 0;
+        materialRef.current.uniforms.uPlasmaHeat.value = 0;
+        materialRef.current.uniforms.uWarpSpeed.value = 0;
 
         const mat = materialRef.current;
         const tl = gsap.timeline({ onComplete });
 
         // ══════════════════════════════════════════════════
-        // PHASE 1 (0–2.5s): Electric Nebula Storm
-        // Particles swirl inward to sphere with lightning strikes
+        // PHASE 1 (0–2.5s): Spiral Galaxy → Black Hole
+        // Particles swirl into a spiral galaxy, gravity intensifies,
+        // accretion disk forms, gravitational wave pulses ripple out
         // ══════════════════════════════════════════════════
+
+        // Morph from nebula (random) → singularity (sphere)
         tl.to(mat.uniforms.uProgress, {
             value: 1.0,
             duration: 2.5,
             ease: "power2.inOut"
         }, "0.3");
 
-        // Lightning strike pulses during nebula phase
-        // Strike 1
-        tl.to(mat.uniforms.uLightningFlash, {
-            value: 1.0, duration: 0.08, ease: "power4.in"
-        }, "0.8");
-        tl.to(mat.uniforms.uLightningFlash, {
+        // Gravity ramps up — spiral vortex intensifies
+        tl.to(mat.uniforms.uGravity, {
+            value: 1.0,
+            duration: 2.2,
+            ease: "power2.in"
+        }, "0.5");
+
+        // Gravitational wave pulse 1
+        tl.to(mat.uniforms.uPulseFlash, {
+            value: 0.6, duration: 0.1, ease: "power4.in"
+        }, "0.9");
+        tl.to(mat.uniforms.uPulseFlash, {
+            value: 0.0, duration: 0.3, ease: "power2.out"
+        }, "1.0");
+
+        // Gravitational wave pulse 2
+        tl.to(mat.uniforms.uPulseFlash, {
+            value: 0.5, duration: 0.08, ease: "power4.in"
+        }, "1.6");
+        tl.to(mat.uniforms.uPulseFlash, {
             value: 0.0, duration: 0.25, ease: "power2.out"
-        }, "0.88");
-        // Strike 2
-        tl.to(mat.uniforms.uLightningFlash, {
+        }, "1.68");
+
+        // Gravitational wave pulse 3 — big one as singularity forms
+        tl.to(mat.uniforms.uPulseFlash, {
             value: 0.8, duration: 0.06, ease: "power4.in"
-        }, "1.5");
-        tl.to(mat.uniforms.uLightningFlash, {
-            value: 0.0, duration: 0.2, ease: "power2.out"
-        }, "1.56");
-        // Strike 3 — big one right as sphere forms
-        tl.to(mat.uniforms.uLightningFlash, {
-            value: 1.0, duration: 0.05, ease: "power4.in"
         }, "2.4");
-        tl.to(mat.uniforms.uLightningFlash, {
-            value: 0.0, duration: 0.35, ease: "power2.out"
-        }, "2.45");
+        tl.to(mat.uniforms.uPulseFlash, {
+            value: 0.0, duration: 0.3, ease: "power2.out"
+        }, "2.46");
 
         // ══════════════════════════════════════════════════
-        // PHASE 2 (2.8–4.6s): Thunder Core → Text Morph
-        // Sphere morphs to text with elastic snap
+        // PHASE 2 (2.5–4.5s): Singularity Collapse → Supernova → Text
+        // Gravity releases, plasma explodes, shockwave expands,
+        // particles reform into text behind the blast wave
         // ══════════════════════════════════════════════════
+
+        // Release gravity (singularity collapses)
+        tl.to(mat.uniforms.uGravity, {
+            value: 0.0,
+            duration: 0.4,
+            ease: "power4.in"
+        }, "2.7");
+
+        // SUPERNOVA FLASH — big pulse
+        tl.to(mat.uniforms.uPulseFlash, {
+            value: 1.0, duration: 0.08, ease: "power4.in"
+        }, "3.0");
+        tl.to(mat.uniforms.uPulseFlash, {
+            value: 0.0, duration: 0.5, ease: "power2.out"
+        }, "3.08");
+
+        // Plasma heat — white-hot explosion
+        tl.to(mat.uniforms.uPlasmaHeat, {
+            value: 1.0,
+            duration: 0.15,
+            ease: "power4.in"
+        }, "2.9");
+        tl.to(mat.uniforms.uPlasmaHeat, {
+            value: 0.2,
+            duration: 1.2,
+            ease: "power2.out"
+        }, "3.1");
+
+        // Shockwave ring expands outward
+        tl.to(mat.uniforms.uShockwave, {
+            value: 12.0,
+            duration: 1.8,
+            ease: "power1.out"
+        }, "3.0");
+
+        // Morph singularity → text (elastic snap behind the shockwave)
         tl.to(mat.uniforms.uProgress, {
             value: 2.0,
             duration: 1.8,
             ease: "elastic.out(1, 0.7)"
         }, "3.0");
 
-        // Lightning during core phase
-        tl.to(mat.uniforms.uLightningFlash, {
-            value: 0.6, duration: 0.06, ease: "power4.in"
-        }, "3.2");
-        tl.to(mat.uniforms.uLightningFlash, {
-            value: 0.0, duration: 0.3, ease: "power2.out"
-        }, "3.26");
+        // ══════════════════════════════════════════════════
+        // PHASE 3 (4.5–6.3s): Plasma Cooling → Neon Text + Embers
+        // Temperature cools from plasma to neon, sparkle embers appear
+        // ══════════════════════════════════════════════════
 
-        // ══════════════════════════════════════════════════
-        // PHASE 3 (4.6–6.5s): Neon Text Reveal + Sparkles
-        // Text glows with intense neon, sparkles scatter
-        // ══════════════════════════════════════════════════
+        // Cool down plasma completely
+        tl.to(mat.uniforms.uPlasmaHeat, {
+            value: 0.0,
+            duration: 1.0,
+            ease: "power1.out"
+        }, "4.5");
+
+        // Reset shockwave
+        tl.to(mat.uniforms.uShockwave, {
+            value: 0.0,
+            duration: 0.5,
+            ease: "power1.out"
+        }, "4.5");
+
+        // Neon intensity ramps up — purple/cyan glow emerges
         tl.to(mat.uniforms.uNeonIntensity, {
             value: 1.0,
             duration: 0.8,
             ease: "power2.in"
         }, "4.6");
 
+        // Ember sparkles
         tl.to(mat.uniforms.uSparkle, {
             value: 1.0,
             duration: 0.6,
             ease: "power1.in"
         }, "4.8");
 
-        // Small electric flicker on the neon text
-        tl.to(mat.uniforms.uLightningFlash, {
-            value: 0.3, duration: 0.04, ease: "none"
+        // Small aftershock pulse on neon text
+        tl.to(mat.uniforms.uPulseFlash, {
+            value: 0.25, duration: 0.04, ease: "none"
         }, "5.2");
-        tl.to(mat.uniforms.uLightningFlash, {
+        tl.to(mat.uniforms.uPulseFlash, {
             value: 0.0, duration: 0.15, ease: "power1.out"
         }, "5.24");
 
         // ══════════════════════════════════════════════════
-        // PHASE 4 (6.5–7.5s): Thunderclap Departure
-        // Final flash + flythrough explosion
+        // PHASE 4 (6.3–7.5s): Warp-Speed Exit
+        // Final flash, warp trails stretch, flythrough explosion
         // ══════════════════════════════════════════════════
 
-        // Final thunder flash
-        tl.to(mat.uniforms.uLightningFlash, {
-            value: 1.0, duration: 0.06, ease: "power4.in"
+        // Final supernova afterglow flash
+        tl.to(mat.uniforms.uPulseFlash, {
+            value: 0.8, duration: 0.06, ease: "power4.in"
         }, "6.3");
-        tl.to(mat.uniforms.uLightningFlash, {
-            value: 0.0, duration: 0.5, ease: "power2.out"
+        tl.to(mat.uniforms.uPulseFlash, {
+            value: 0.0, duration: 0.4, ease: "power2.out"
         }, "6.36");
 
         // Fade out sparkle and neon
@@ -483,6 +711,13 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
         tl.to(mat.uniforms.uNeonIntensity, {
             value: 0.0, duration: 0.5, ease: "power1.out"
         }, "6.4");
+
+        // Warp speed — star trails stretch
+        tl.to(mat.uniforms.uWarpSpeed, {
+            value: 1.0,
+            duration: 1.0,
+            ease: "power2.in"
+        }, "6.5");
 
         // Flythrough explosion
         tl.to(mat.uniforms.uFlythrough, {
@@ -530,9 +765,13 @@ export default function LoaderParticles({ onComplete }: { onComplete: () => void
                     uTime: { value: 0 },
                     uProgress: { value: 0 },
                     uFlythrough: { value: 0 },
-                    uLightningFlash: { value: 0 },
+                    uPulseFlash: { value: 0 },
                     uNeonIntensity: { value: 0 },
-                    uSparkle: { value: 0 }
+                    uSparkle: { value: 0 },
+                    uGravity: { value: 0 },
+                    uShockwave: { value: 0 },
+                    uPlasmaHeat: { value: 0 },
+                    uWarpSpeed: { value: 0 }
                 }}
                 transparent={true}
                 depthWrite={false}
