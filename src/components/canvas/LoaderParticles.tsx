@@ -299,12 +299,24 @@ void main() {
 
     // ── Shockwave ring highlight — chromatic spectrum ring ──
     // Particles near the wavefront get a vibrant multi-color aurora effect
+    // During text phase: wider band sweeps across letters with lingering color trail
     if (uShockwave > 0.0) {
         float dist = length(targetPos);
         float waveFront = uShockwave;
+        bool isTextPhase = uProgress > 1.5;
 
-        // Primary shockwave ring — tight bright band
-        float rimGlow = 1.0 - smoothstep(0.0, 1.2, abs(dist - waveFront));
+        // During text phase, widen the band so more letters are colored at once
+        float rimWidth = isTextPhase ? 3.0 : 1.2;
+        float primaryStrength = isTextPhase ? 0.9 : 0.75;
+
+        // Primary shockwave ring — tight bright band (wider during text)
+        float rimGlow = 1.0 - smoothstep(0.0, rimWidth, abs(dist - waveFront));
+
+        // Trailing color linger — particles BEHIND the wavefront stay colored briefly
+        // Only particles the wave has already passed (dist < waveFront)
+        float trailLength = isTextPhase ? 5.0 : 2.0;
+        float trail = smoothstep(0.0, trailLength, waveFront - dist) * (1.0 - smoothstep(0.0, 0.5, dist - waveFront));
+        float trailFade = isTextPhase ? 0.5 : 0.25;
 
         // Secondary inner ring — trailing afterglow (slightly behind the wavefront)
         float innerRim = 1.0 - smoothstep(0.0, 2.0, abs(dist - waveFront * 0.7));
@@ -337,8 +349,13 @@ void main() {
         vec3 leadingWhite = vec3(1.0, 0.95, 0.9);
         vec3 shockColor = mix(leadingWhite, chromaColor, leadingEdge);
 
-        // Apply primary ring
-        vColor = mix(vColor, shockColor, rimGlow * 0.75);
+        // Apply primary ring — stronger during text phase
+        vColor = mix(vColor, shockColor, rimGlow * primaryStrength);
+
+        // Apply trailing color linger — fading chromatic tint behind wavefront
+        // This makes text letters stay colored for a moment after the wave passes
+        vec3 lingerColor = mix(chromaCyan, chromaPurple, sin(angle * 1.5 + dist * 0.3) * 0.5 + 0.5);
+        vColor = mix(vColor, lingerColor, trail * trailFade);
 
         // Apply trailing inner ring — warm orange/purple embers
         vec3 emberColor = mix(chromaOrange, chromaPurple, sin(angle * 2.0 + uTime) * 0.5 + 0.5);
@@ -346,6 +363,11 @@ void main() {
 
         // Brightness boost at wavefront — particles near the ring glow brighter
         vColor += vec3(1.0) * rimGlow * 0.15;
+
+        // Size pulse on text particles when wavefront touches them
+        if (isTextPhase) {
+            gl_PointSize *= (1.0 + rimGlow * 1.2);
+        }
     }
 }
 `;
