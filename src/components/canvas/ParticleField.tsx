@@ -17,6 +17,15 @@ export default function ParticleField() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const SINE_TABLE_SIZE = 2048;
+  const sineTable = useMemo(() => {
+    const table = new Float32Array(SINE_TABLE_SIZE);
+    for (let i = 0; i < SINE_TABLE_SIZE; i++) {
+      table[i] = Math.sin((i / SINE_TABLE_SIZE) * Math.PI * 2);
+    }
+    return table;
+  }, []);
+
   const [positions, colors] = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
@@ -61,9 +70,19 @@ export default function ParticleField() {
 
     const posArr = pointsRef.current.geometry.attributes.position
       .array as Float32Array;
+    
+    // Pre-calculated values for the lookup table index calculations
+    const TWO_PI = Math.PI * 2;
+    const tableScale = SINE_TABLE_SIZE / TWO_PI;
+    const baseIndex = t * tableScale;
+    const indexStep = 0.01 * tableScale;
+    const mask = SINE_TABLE_SIZE - 1; // 2047 for bitwise wrapping
+
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
-      posArr[i3 + 1] += Math.sin(t + i * 0.01) * 0.001;
+      // Get the index in the sine table using super fast bitwise AND mapping
+      const lutIndex = (Math.floor(baseIndex + i * indexStep)) & mask;
+      posArr[i3 + 1] += sineTable[lutIndex] * 0.001;
     }
     pointsRef.current.geometry.attributes.position.needsUpdate = true;
   });

@@ -17,7 +17,7 @@
 
     @page {
       size: A4;
-      margin: 0;
+      margin: 0.5in 0.6in 0.5in 0.6in;
     }
 
     body {
@@ -33,12 +33,10 @@
     .page {
       width: 8.5in;
       min-height: 11in;
-      max-height: 11.4in;
       margin: 20px auto;
       padding: 0.5in 0.6in 0.5in 0.6in;
       background: #fff;
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-      overflow: hidden;
     }
 
     @media print {
@@ -49,7 +47,13 @@
       .page {
         margin: 0;
         box-shadow: none;
-        padding: 0.45in 0.55in 0.4in 0.55in;
+        padding: 0;
+        min-height: auto;
+      }
+
+      .entry {
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
 
       .download-btn {
@@ -206,6 +210,7 @@
 
 <body>
 
+  <!-- ==================== PAGE 1 ==================== -->
   <div class="page">
 
     <!-- ═══════════════ HEADER ═══════════════ -->
@@ -252,17 +257,26 @@
           <span class="entry-date">2020 – 2022</span>
         </div>
       </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Vishashvi Public School</span>
+          <span class="entry-location">Patna, Bihar</span>
+        </div>
+        <div class="entry-sub">
+          <span class="entry-subtitle">Matriculation (10th)</span>
+          <span class="entry-date">2019 – 2020</span>
+        </div>
+      </div>
     </div>
 
     <!-- ═══════════════ WORK EXPERIENCE ═══════════════ -->
     <div class="section">
       <div class="section-title">Work Experience</div>
 
-
-
       <div class="entry">
         <div class="entry-header">
-          <span class="entry-title">Bihar Skill Development Mission (BSDM)</span>
+          <span class="entry-title">Bihar Skill Development Center (BSDC)</span>
           <span class="entry-location">Patna, Bihar</span>
         </div>
         <div class="entry-sub">
@@ -273,6 +287,40 @@
           <li>Cleared OnCET Process &amp; Proficiency Tests to become a certified Learning Facilitator for the Kushal
             Yuva Program</li>
           <li>Facilitate digital literacy and technical skill-building sessions for program participants</li>
+          <li>Trained and successfully certified more than 100+ KYP students with the Kushal Yuva Program course</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">Various Companies (Contract / Replacement)</span>
+          <span class="entry-location">Bhubaneswar, Odisha</span>
+        </div>
+        <div class="entry-sub">
+          <span class="entry-subtitle">IT Support Engineer</span>
+          <span class="entry-date">2026 – Present</span>
+        </div>
+        <ul class="bullets">
+          <li><strong>Indriya Jewellers (Aditya Birla Group):</strong> Manage store IT systems, POS equipment, active directory setups, and network stability on a weekly part-time basis (May 2026 – Present)</li>
+          <li><strong>UltraTech Cement (Aditya Birla Group - Zonal Office):</strong> Completed a 1-month full-time contract supporting office network infrastructure, configuring workstations, and troubleshooting hardware issues</li>
+          <li><strong>RBL Bank (Bhubaneswar Branch):</strong> Delivered on-site branch IT support, successfully reinstalled OS for 3 user workstations, resolved network/VPN connectivity issues, and received a perfect 5/5 client satisfaction rating from the Branch Manager (May 2026)</li>
+          <li><strong>GTL Infrastructure:</strong> Executed a 2-day priority system recovery, diagnosing workstation errors and restoring secure database communication (June 16 – 17, 2026)</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">DeepSurge AI Tech</span>
+          <span class="entry-location">Bhubaneswar, Odisha</span>
+        </div>
+        <div class="entry-sub">
+          <span class="entry-subtitle">Software Development Intern (Vision AI)</span>
+          <span class="entry-date">2025</span>
+        </div>
+        <ul class="bullets">
+          <li>Completed a hands-on Software Development Internship focusing on Vision AI systems</li>
+          <li>Contributed to developing an application for video dataset preparation and model training workflows</li>
+          <li>Utilized CVAT.AI for efficient and precise data annotation, improving dataset quality for computer vision models</li>
         </ul>
       </div>
     </div>
@@ -280,6 +328,49 @@
     <!-- ═══════════════ PROJECTS ═══════════════ -->
     <div class="section">
       <div class="section-title">Projects</div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">NeuralDocs — AI RAG Platform</span>
+          <span class="entry-date">2026</span>
+        </div>
+        <div class="entry-detail" style="font-style:italic; font-size:10pt;">Next.js, Node.js, MongoDB, Gemini AI,
+          LangChain &nbsp;|&nbsp; <a href="https://salesamore.onrender.com" style="color:#000;">Live Demo</a></div>
+        <ul class="bullets">
+          <li>Built a production-grade Retrieval-Augmented Generation platform for natural language document Q&amp;A</li>
+          <li>Integrated vector embedding-based semantic search for accurate context retrieval across multi-format
+            documents</li>
+          <li>Implemented real-time streaming responses with Gemini AI for low-latency conversational interactions</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">3D Developer Portfolio</span>
+          <span class="entry-date">2026</span>
+        </div>
+        <div class="entry-detail" style="font-style:italic; font-size:10pt;">Next.js, Three.js, React Three Fiber, Tailwind CSS, Framer Motion, TypeScript
+          &nbsp;|&nbsp; <a href="https://riturajrishu.vercel.app/" style="color:#000;">Live Demo</a></div>
+        <ul class="bullets">
+          <li>Designed and developed a premium, interactive developer portfolio featuring 3D animated particle backgrounds and custom cursor effects using Three.js</li>
+          <li>Implemented fully responsive glassmorphism UI layouts and smooth scroll-linked page transitions using Framer Motion and Tailwind CSS</li>
+          <li>Optimized performance and SEO metrics, achieving high loading speeds and fully accessible navigation structures</li>
+        </ul>
+      </div>
+
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">B.B. Chhatoi HSS — Educational Portal</span>
+          <span class="entry-date">2026</span>
+        </div>
+        <div class="entry-detail" style="font-style:italic; font-size:10pt;">Next.js, React, Tailwind CSS, Framer Motion, TypeScript
+          &nbsp;|&nbsp; <a href="https://bbchhatoihss.vercel.app/" style="color:#000;">Live Demo</a></div>
+        <ul class="bullets">
+          <li>Designed and developed a premium, production-grade educational portal for B.B. Chhatoi Higher Secondary School, Nabarangpur</li>
+          <li>Implemented full mobile responsiveness, scroll-linked animations, and automated CHSE Odisha +2 stream details</li>
+          <li>Integrated SAMS Odisha guidance and structured campus discovery modules to facilitate online admissions and announcements</li>
+        </ul>
+      </div>
 
       <div class="entry">
         <div class="entry-header">
@@ -300,22 +391,6 @@
 
       <div class="entry">
         <div class="entry-header">
-          <span class="entry-title">NeuralDocs — AI RAG Platform</span>
-          <span class="entry-date">2026</span>
-        </div>
-        <div class="entry-detail" style="font-style:italic; font-size:10pt;">Next.js, Node.js, MongoDB, Gemini AI,
-          LangChain &nbsp;|&nbsp; <a href="https://salesamore.onrender.com" style="color:#000;">Live Demo</a></div>
-        <ul class="bullets">
-          <li>Built a production-grade Retrieval-Augmented Generation platform for natural language document Q&amp;A
-          </li>
-          <li>Integrated vector embedding-based semantic search for accurate context retrieval across multi-format
-            documents</li>
-          <li>Implemented real-time streaming responses with Gemini AI for low-latency conversational interactions</li>
-        </ul>
-      </div>
-
-      <div class="entry">
-        <div class="entry-header">
           <span class="entry-title">Real-Time Chat Application</span>
           <span class="entry-date">2025</span>
         </div>
@@ -330,7 +405,6 @@
           <li>Designed message delivery status tracking (double ticks) and efficient state management with Zustand</li>
         </ul>
       </div>
-
     </div>
 
     <!-- ═══════════════ ACHIEVEMENTS ═══════════════ -->
@@ -375,14 +449,12 @@
     <div class="section">
       <div class="section-title">Technical Skills</div>
       <div class="skills-line"><strong>Languages:</strong> JavaScript, TypeScript, Python, C, SQL, HTML/CSS</div>
-      <div class="skills-line"><strong>Frontend:</strong> React, Next.js, Tailwind CSS, Three.js, Framer Motion, Zustand
-      </div>
+      <div class="skills-line"><strong>Frontend:</strong> React, Next.js, Tailwind CSS, Three.js, Framer Motion, Zustand</div>
       <div class="skills-line"><strong>Backend:</strong> Node.js, Express.js, Socket.io, WebRTC, REST APIs</div>
       <div class="skills-line"><strong>Databases:</strong> MongoDB, MySQL, Firebase</div>
-      <div class="skills-line"><strong>Tools &amp; Platforms:</strong> Git/GitHub, Docker, Linux, Vercel, Render,
-        Cloudinary</div>
-      <div class="skills-line"><strong>Certifications:</strong> Generative AI Mastermind (Outskill); Deloitte Cyber
-        Security Job Simulation; AI Workshop (Optimal Agents AI)</div>
+      <div class="skills-line"><strong>Testing &amp; QA:</strong> Manual Testing, Test Case Design, API Testing (Postman), Unit &amp; Integration Testing (Jest), Bug Tracking, Chrome DevTools</div>
+      <div class="skills-line"><strong>Tools &amp; Platforms:</strong> Git/GitHub, Docker, Linux, Vercel, Render, Cloudinary</div>
+      <div class="skills-line"><strong>Certifications:</strong> Generative AI Mastermind (Outskill); Deloitte Cyber Security Job Simulation; AI Workshop (Optimal Agents AI); Software Development Intern Certificate (DeepSurge AI Tech)</div>
     </div>
 
   </div>

@@ -150,7 +150,6 @@
 
 
 html {
-  scroll-behavior: smooth;
   overflow-x: hidden;
 }
 
@@ -213,6 +212,8 @@ body, html {
   border-top-color: rgba(255, 255, 255, 0.15);
   border-left-color: rgba(255, 255, 255, 0.15);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .glass-strong {
@@ -223,6 +224,8 @@ body, html {
   border-top-color: rgba(255, 255, 255, 0.25);
   border-left-color: rgba(255, 255, 255, 0.25);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 /* ─────────────── GRADIENT TEXT ─────────────── */
